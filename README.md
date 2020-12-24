@@ -12,6 +12,10 @@ After building the base image, run the following command to build the developmen
 
 `docker build -t databoss/nad:development docker/development`
 
+You may also need to build the docker image for KAFKA service with the following command:
+
+`docker build -t databoss/nad:kafka wurstmeister/kafka`
+
 ## Running the Code From Container
 
 Once the containers are prepared, you can run the following command to start the docker
