@@ -39,7 +39,7 @@ class iForest:
             metric.update(y, score)  # Update the metric.
 
             score_array_iforest.append(score)
-            print(score)
+
         # Output resulting AUROCS metric.
         print(metric.get())
         return metric.get(), score_array_iforest
