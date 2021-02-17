@@ -1,9 +1,8 @@
-from kafka import KafkaConsumer
-import pickle
-import numpy as np
+from read_data.producer import DataProducer
 
 
-consumer = KafkaConsumer('sample', group_id=None, auto_offset_reset='earliest', value_deserializer = pickle.loads)
-while True:
-    msg = next(consumer)
-    print(msg.value)
+p = DataProducer()
+value = None #whateva u want string array vs
+
+for i in range(10):
+    p.send_stream(topic="Test", value=value)
