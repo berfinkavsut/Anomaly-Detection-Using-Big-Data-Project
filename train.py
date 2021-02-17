@@ -2,7 +2,7 @@ import numpy as np
 from models.loda import Loda
 from models.iForest import IForest
 from models.xStream import XStream
-from models.kit_net import KitNet
+# from models.kit_net import KitNet
 
 
 
@@ -26,7 +26,7 @@ class Train:
             'Loda': Loda,
             'xStream': XStream,
             'IForest' : IForest,
-            'KitNet': KitNet,
+            # 'KitNet': KitNet,
         }
         self.models = {}  # Dictionary of models
         # Generating models
@@ -43,15 +43,13 @@ class Train:
                     inner_models.append(self.create_model(model_key, inner_model_properties[model_key]))
                 self.ensemble_models[ens_key] = inner_models
 
-        print(self.models)
-        print(self.ensemble_models)
+
 
     def create_model(self, model_key, model_properties):
         return self.func_mapping[model_key](**model_properties)
 
     def fit(self, X_train):
         for key in self.models:
-            print(key)
             self.models[key].fit(X_train)
 
         for key in self.ensemble_models:

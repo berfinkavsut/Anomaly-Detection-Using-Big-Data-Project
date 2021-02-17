@@ -28,6 +28,9 @@ class Detector:
         :return:
         """
 
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
+
         self.model = self.model.fit(X)
 
 
@@ -37,6 +40,9 @@ class Detector:
         :param X: Data to be predicted.
         :return: scores, probs: Anomaly scores, probability for anomaly.
         """
+
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
 
         if self.lib == 'pyod':
             scores = self.model.decision_function(X)
