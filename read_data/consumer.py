@@ -42,7 +42,10 @@ class DataConsumer(Consumer):
                 elif not msg.error():
 
                     value = self.deserializer(msg.value())
+
                     print('Received message: {0}'.format(value))
+
+                    yield value
 
                 elif msg.error().code() == KafkaError._PARTITION_EOF:
 
@@ -58,3 +61,8 @@ class DataConsumer(Consumer):
 
         finally:
             super().close()
+
+
+    #
+    #
+    # def create_batch(self, topic=None, batch_size=64):
