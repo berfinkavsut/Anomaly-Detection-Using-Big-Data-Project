@@ -1,8 +1,5 @@
 import numpy as np
-from models.loda import Loda
-from models.iForest import IForest
-from models.xStream import XStream
-# from models.kit_net import KitNet
+from models import Loda, XStream, IForest
 
 
 
@@ -25,7 +22,7 @@ class Train:
         self.func_mapping = {
             'Loda': Loda,
             'xStream': XStream,
-            'IForest' : IForest,
+            'IForest': IForest,
             # 'KitNet': KitNet,
         }
         self.models = {}  # Dictionary of models
@@ -49,6 +46,10 @@ class Train:
         return self.func_mapping[model_key](**model_properties)
 
     def fit(self, X_train):
+
+        if X_train.ndim == 1:
+            X_train = X_train.reshape(1, -1)
+
         for key in self.models:
             self.models[key].fit(X_train)
 
@@ -58,6 +59,10 @@ class Train:
         return None
 
     def predict(self, X_train):
+
+        if X_train.ndim == 1:
+            X_train = X_train.reshape(1, -1)
+
         pred = {}
         ens_pred = {}
         for key in self.models:
@@ -75,6 +80,8 @@ class Train:
 
         return pred, ens_pred
 
+    def get_models(self):
+        return self.models, self.ensemble_models
 
 
 

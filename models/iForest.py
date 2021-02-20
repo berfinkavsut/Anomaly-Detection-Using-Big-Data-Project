@@ -1,7 +1,5 @@
-from pysad.models.integrations import ReferenceWindowModel
-from pysad.utils import ArrayStreamer
-from pysad.evaluation import AUROCMetric
-from pyod.models.iforest import IForest as pyod_IForest
+from pysad.models import IForestASD
+# from pyod.models.iforest import IForest as pyod_IForest
 from tqdm import tqdm
 from models.Detector import Detector
 
@@ -12,21 +10,13 @@ class IForest(Detector):
     """
 
 
-    def __init__(self, n_estimators=100, contamination=0.1):
+    def __init__(self, initial_window_X=None, window_size=2048):
         """
         Initializes iterator which streams a given array, preprocessors and postprocessors, and the model itself
         """
-        model = pyod_IForest(n_estimators=n_estimators,
-                             max_samples="auto",
-                             contamination=contamination,
-                             max_features=1.,
-                             bootstrap=False,
-                             n_jobs=1,
-                             behaviour='old',
-                             random_state=None,
-                             verbose=0)
+        model = IForestASD(initial_window_X=initial_window_X, window_size=window_size)
         # metric = AUROCMetric()
-        lib = 'pyod'
+        lib = 'pysad'
         super().__init__(model, lib)
 
 

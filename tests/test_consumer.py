@@ -1,5 +1,4 @@
-from read_data.consumer import DataConsumer
-import time
+from flow.consumer import DataConsumer
 
 c = DataConsumer()
 streamer = c.stream_data("Test")

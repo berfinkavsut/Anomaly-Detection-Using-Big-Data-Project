@@ -43,7 +43,7 @@ class DataConsumer(Consumer):
 
                     value = self.deserializer(msg.value())
 
-                    print('Received message: {0}'.format(value))
+                    print(f'Received message: {value}')
 
                     yield value
 

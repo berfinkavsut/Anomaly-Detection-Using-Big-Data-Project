@@ -28,9 +28,6 @@ class Detector:
         :return:
         """
 
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
-
         self.model = self.model.fit(X)
 
 
@@ -41,15 +38,12 @@ class Detector:
         :return: scores, probs: Anomaly scores, probability for anomaly.
         """
 
-        if X.ndim == 1:
-            X = X.reshape(1, -1)
-
         if self.lib == 'pyod':
             scores = self.model.decision_function(X)
             probs = self.model.predict_proba(X)[:,1]
         elif self.lib == 'pysad':
             scores = self.model.score(X)
-            probs = (scores - scores.min())/(scores.max() - scores.min()) #self.ScoreConverter.fit_transform(scores)
+            probs = self.ScoreConverter.fit_transform(scores)
         else:
             raise Exception("Model not defined!")
 

@@ -1,4 +1,4 @@
-from read_data.producer import DataProducer
+from flow.producer import DataProducer
 
 
 p = DataProducer()
