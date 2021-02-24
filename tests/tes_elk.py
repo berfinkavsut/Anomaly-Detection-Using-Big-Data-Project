@@ -7,7 +7,12 @@ import time
 import json
 
 
-
+a = pd.DataFrame(np.random.randint(0, 100, size=(1, 2)), columns=list('AB'))
+c = pd.DataFrame(np.random.randint(0, 100, size=(1, 2)), columns=list('CD'))
+abcd = a.join(c)
+print(a)
+print(c)
+print(abcd)
 
 user = "elastic"
 psw = "jjosLBNU9NmTsU5vatFU"
@@ -22,7 +27,7 @@ for i in range(1000):
         d['@timestamp'] = datetime.utcnow()
     print(data)
 
-    res = es.create(index="testing", id=i+567, body=data[0])
+    res = es.create(index="testing", id=i, body=data[0])
     print(res['result'])
     #
     # res = es.get(index="testing", id=i)

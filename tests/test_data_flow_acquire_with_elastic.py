@@ -3,6 +3,8 @@ from flow.system_flow import SystemFlow
 from utils.animate_live import AnimateLive
 import numpy as np
 from elasticsearch import Elasticsearch
+from datetime import datetime
+from elasticsearch import Elasticsearch
 import pandas as pd
 
 props = {'xStream': {}, 'IForest': {}, 'Loda': {}}
@@ -14,56 +16,62 @@ ens_props = {'Ensemble (IForest and Loda)': {'IForest': {}, 'Loda': {}},
 system_flow = SystemFlow(9, props, ens_props)
 topic = "Test"
 system_flow.create_stream(topic)
-anim = AnimateLive(ax_num=6, x_labels=["Time"] * 6, y_labels=["xStream", "IForest", "Loda", "Ensemble (IForest and Loda)",
-                                                    "Ensemble (Loda and xStream)", "Ensemble (xStream and IForest)"])
+# anim = AnimateLive(ax_num=6, x_labels=["Time"] * 6, y_labels=["xStream", "IForest", "Loda", "Ensemble (IForest and Loda)",
+#                                                     "Ensemble (Loda and xStream)", "Ensemble (xStream and IForest)"])
 
-for i in range(1000):
+user = "elastic"
+psw = "jjosLBNU9NmTsU5vatFU"
+access_url = f"http://{user}:{psw}@localhost:9200/"
+es = Elasticsearch(hosts=access_url)
 
-    if i < 3:
+
+i = 0
+while True:
+
+    if i < 10:
         system_flow.fit_next(topic)
     else:
         s = time.time()
         probs, ens_probs, data = system_flow.fit_predict_next(topic)
-        print(probs, ens_probs, data)
 
-        update_arr = np.array([])
+        df1 = pd.DataFrame(data.reshape((1, -1)), columns=[f"C{i}" for i in range(len(data))])
+        df2 = pd.DataFrame.from_dict(probs)
+        df3 = pd.DataFrame.from_dict(ens_probs)
+        df4 = pd.DataFrame.from_dict({"@timestamp": [datetime.utcnow()]})
+        df = df1.join(df2.join(df3.join(df4)))
+        data = df.to_dict('records')
 
-        for key in probs.keys():
-            update_arr = np.append(update_arr, probs[key])
+        res = es.create(index="test-flow", id=i+1, body=data[0])
+        print(res['result'])
 
-        for key in ens_probs.keys():
-            update_arr = np.append(update_arr, ens_probs[key])
+        es.indices.refresh(index="test-flow")
 
-        anim.update_data(update_arr, time.time()-s)
-        anim.update_graph()
+        res = es.search(index="test-flow", body={"query": {"match_all": {}}})
+        print("Got %d Hits:" % res['hits']['total']['value'])
+
+        time.sleep(1)
 
 
-import logging
-from logging import StreamHandler
-import logstash
-import sys
 
-host = 'localhost'
 
-test_logger = logging.getLogger('python-logstash-logger')
-test_logger.setLevel(logging.INFO)
-test_logger.addHandler(logstash.TCPLogstashHandler(host, 5044, version=1))
-test_logger.addHandler(StreamHandler())
 
-try:
-    test_logger.error('python-logstash: test logstash error message.')
-    test_logger.info('python-logstash: test logstash info message.')
-    test_logger.warning('python-logstash: test logstash warning message.')
 
-    # add extra field to logstash message
-    extra = {
-        'test_string': 'python version: ' + repr(sys.version_info),
-        'test_boolean': True,
-        'test_dict': {'a': 1, 'b': 'c'},
-        'test_float': 1.23,
-        'test_integer': 123,
-        'test_list': [1, 2, '3'],
-    }
-    test_logger.info('python-logstash: test extra fields', extra=extra)
-except:
-    print("Error")
+
+
+        # update_arr = np.array([])
+        #
+        # for key in probs.keys():
+        #     update_arr = np.append(update_arr, probs[key])
+        #
+        # for key in ens_probs.keys():
+        #     update_arr = np.append(update_arr, ens_probs[key])
+        #
+        # anim.update_data(update_arr, time.time()-s)
+        # anim.update_graph()
+
+
+
+    i+=1
+
+
+
