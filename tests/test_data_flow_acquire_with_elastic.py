@@ -2,6 +2,8 @@ import time
 from flow.system_flow import SystemFlow
 from utils.animate_live import AnimateLive
 import numpy as np
+from elasticsearch import Elasticsearch
+import pandas as pd
 
 props = {'xStream': {}, 'IForest': {}, 'Loda': {}}
 
