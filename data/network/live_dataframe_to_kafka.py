@@ -8,7 +8,8 @@ import time
 import numpy as np
 import pandas as pd
 import pyshark
-import DataProducer
+from flow.producer import DataProducer
+
 
 
 # @param interface: the interface
@@ -16,6 +17,7 @@ import DataProducer
 if __name__ == "__main__":
     start = time.time()
     cap = pyshark.LiveCapture("Wi-Fi")
+    p = DataProducer()
 
     col_names = [
         "duration", "source", "destination", "protocol", "protocol_name", "bytes", "service", "flag", "ip_vers",
@@ -32,7 +34,7 @@ if __name__ == "__main__":
         # print("df    --- %s seconds ---" % (time.time() - start))
         # check if TCP layer exist in the i'th packet
         if "TCP" in packet:
-            time_relative = packet.tcp.time_relative
+            time_relative = i + float(packet.tcp.time_relative)
             srcport = packet.tcp.srcport
             dstport = packet.tcp.dstport
             proto_len = packet.tcp.len
@@ -113,7 +115,7 @@ if __name__ == "__main__":
             proto_type = proto_size = hw_type = hw_size =hw_opcode = src_hw_mac = src_proto_ipv4 = dst_hw_mac = dst_proto_ipv4 = None
 
         # adding the i'th packets information to the i'th row at the dataframe
-        df.loc[i] = [
+        df.loc[0] = [
             time_relative , ip_src , ip_dst , ip_proto, proto_name 
             , packet.length , ip_dsfield , ip_flags , ip_version ,  srcport , dstport 
             , proto_len, tcp_seq , tcp_seq_raw, tcp_nxtseq ,tcp_ack, tcp_ack_raw , tcp_flags , tcp_flags_res
@@ -122,20 +124,10 @@ if __name__ == "__main__":
             , checksum , checksum_status , urgent_pointer , stream ,  proto_type , proto_size , hw_type , hw_size ,hw_opcode 
             , src_hw_mac , src_proto_ipv4 , dst_hw_mac , dst_proto_ipv4
                     ]
-        i= i+1
-        if (time.time() - start) > 5:
-            print(str (df.shape))
-            start = time.time()
-            df = pd.DataFrame(columns = col_names) 
-            print(time.gmtime())
-            i=0
-        else:
-            pass
-
- 
-
-
-
+        p.send_stream(topic="Test", value=df)
+        print(df)
+        print(time.gmtime())
+        i = time_relative
 #     # cap.clear()
 #     # cap.close()
     
