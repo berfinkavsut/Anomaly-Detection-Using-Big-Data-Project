@@ -29,7 +29,6 @@ if __name__ == "__main__":
                 ]
     
     df = pd.DataFrame(columns=col_names)
-    i = 0
     for packet in cap.sniff_continuously():
         # print("df    --- %s seconds ---" % (time.time() - start))
         # check if TCP layer exist in the i'th packet
@@ -128,5 +127,4 @@ if __name__ == "__main__":
         p.send_stream(topic="Test", value=df)
         # pd.set_option('display.max_columns', None)
         # print(time.gmtime())
-        i = time_relative
         # break
