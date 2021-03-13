@@ -125,8 +125,8 @@ if __name__ == "__main__":
             checksum, checksum_status, urgent_pointer, stream,  proto_type, proto_size, hw_type, hw_size, hw_opcode,
             src_hw_mac, dst_hw_mac
                     ]
-        # p.send_stream(topic="Test", value=df)
-        pd.set_option('display.max_columns', None)
+        p.send_stream(topic="Test", value=df)
+        # pd.set_option('display.max_columns', None)
         # print(time.gmtime())
         i = time_relative
         # break
