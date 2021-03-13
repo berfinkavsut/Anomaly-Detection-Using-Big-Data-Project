@@ -15,13 +15,13 @@ from flow.producer import DataProducer
 # @param interface: the interface
 # @param timeout: time interval
 if __name__ == "__main__":
-    start = time.time()
     cap = pyshark.LiveCapture("Wi-Fi")
     p = DataProducer()
+    start = time.time()
 
     col_names = [
-        "duration", "source", "destination", "protocol", "protocol_name", "bytes", "service", "flag", "ip_vers",
-        "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
+        "date&time", "time", "duration", "source", "destination", "protocol", "protocol_name", "bytes", "service",
+        "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
         "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
         "urgent_pointer", "stream", "proto_type", "proto_size", "hw_type", "hw_size", "hw_opcode", "src_hw_mac",
@@ -29,8 +29,10 @@ if __name__ == "__main__":
                 ]
     
     df = pd.DataFrame(columns=col_names)
+    prev_time=0
     for packet in cap.sniff_continuously():
         # print("df    --- %s seconds ---" % (time.time() - start))
+        date_time = str(packet.sniff_time)
         # check if TCP layer exist in the i'th packet
         if "TCP" in packet:
             time_relative = float(packet.tcp.time_relative)
@@ -42,7 +44,7 @@ if __name__ == "__main__":
             tcp_nxtseq = int(packet.tcp.nxtseq)
             tcp_ack = int(packet.tcp.ack)
             tcp_ack_raw = int(packet.tcp.ack_raw)
-            tcp_flags = int(packet.tcp.flags,16)
+            tcp_flags = str(packet.tcp.flags)
             tcp_flags_res = int(packet.tcp.flags_res)
             tcp_flags_ns = int(packet.tcp.flags_ns)
             tcp_flags_cwr = int(packet.tcp.flags_cwr)
@@ -55,8 +57,8 @@ if __name__ == "__main__":
             tcp_flags_fin = int(packet.tcp.flags_fin)
             tcp_flags_str = str(packet.tcp.flags_str)
             window_size_value = str(packet.tcp.window_size_value)
-            window_size = str(packet.tcp.window_size)
-            checksum = int(packet.tcp.checksum,16)
+            window_size = int(packet.tcp.window_size)
+            checksum = str(packet.tcp.checksum) #hex
             checksum_status = int(packet.tcp.checksum_status)
             urgent_pointer = int(packet.tcp.urgent_pointer)
             stream = int(packet.tcp.stream)
@@ -71,7 +73,7 @@ if __name__ == "__main__":
             proto_len = int(packet.udp.length)
             stream = int(packet.udp.stream)
             proto_name = str(packet.udp.layer_name)
-            checksum = int(packet.udp.checksum,16)
+            checksum = str(packet.udp.checksum) #hex
             checksum_status = int(packet.udp.checksum_status)
             tcp_seq = tcp_seq_raw = tcp_nxtseq = tcp_ack = tcp_ack_raw = tcp_flags = tcp_flags_res = tcp_flags_ns = tcp_flags_cwr = tcp_flags_ecn = tcp_flags_urg = tcp_flags_ack = tcp_flags_push = tcp_flags_reset = tcp_flags_syn = tcp_flags_fin = tcp_flags_str = window_size_value = window_size = urgent_pointer = None
 
@@ -85,8 +87,8 @@ if __name__ == "__main__":
             ip_src = str(packet.ip.src)
             ip_dst = str(packet.ip.dst)
             ip_proto = int(packet.ip.proto)
-            ip_dsfield = int(packet.ip.dsfield,16)
-            ip_flags = int(packet.ip.flags,16)
+            ip_dsfield = str(packet.ip.dsfield) #hex
+            ip_flags = str(packet.ip.flags) #hex
             ip_version = int(packet.ip.version)
         # check if IPV6 layer exist in the i'th packet
         elif "IPV6" in packet:
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     
         # check if ARP layer exist in the i'th packet        
         if "ARP" in packet:
-            proto_type = int(packet.arp.proto_type,16)
+            proto_type = str(packet.arp.proto_type) #hex
             proto_size = int(packet.arp.proto_size)
             hw_type = int(packet.arp.hw_type)
             hw_size = int(packet.arp.hw_size)
@@ -114,9 +116,11 @@ if __name__ == "__main__":
         else:
             proto_type = proto_size = hw_type = hw_size = hw_opcode = src_hw_mac = dst_hw_mac = None
 
+        duration = float(packet.sniff_timestamp) - prev_time
+
         # adding the i'th packets information to the i'th row at the dataframe
         df.loc[0] = [
-            time_relative, ip_src, ip_dst, ip_proto, proto_name,
+            date_time, time_relative, duration, ip_src, ip_dst, ip_proto, proto_name,
             packet.length, ip_dsfield, ip_flags, ip_version, srcport, dstport,
             proto_len, tcp_seq, tcp_seq_raw, tcp_nxtseq, tcp_ack, tcp_ack_raw, tcp_flags, tcp_flags_res,
             tcp_flags_ns,  tcp_flags_cwr,  tcp_flags_ecn, tcp_flags_urg, tcp_flags_ack, tcp_flags_push, tcp_flags_reset,
@@ -124,7 +128,7 @@ if __name__ == "__main__":
             checksum, checksum_status, urgent_pointer, stream,  proto_type, proto_size, hw_type, hw_size, hw_opcode,
             src_hw_mac, dst_hw_mac
                     ]
+        prev_time = float(packet.sniff_timestamp)
         p.send_stream(topic="Test", value=df)
-        # pd.set_option('display.max_columns', None)
-        # print(time.gmtime())
-        # break
+        # print(df)
+
