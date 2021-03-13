@@ -20,7 +20,7 @@ if __name__ == "__main__":
     start = time.time()
 
     col_names = [
-        "date&time", "time", "duration", "source", "destination", "protocol", "protocol_name", "bytes", "service",
+        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes", "service",
         "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
         "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
@@ -34,6 +34,10 @@ if __name__ == "__main__":
         # print("df    --- %s seconds ---" % (time.time() - start))
         date_time = str(packet.sniff_time)
         # check if TCP layer exist in the i'th packet
+        if "DATA" in packet:
+            print(packet.data.len)
+
+
         if "TCP" in packet:
             time_relative = float(packet.tcp.time_relative)
             srcport = int(packet.tcp.srcport)
@@ -44,7 +48,7 @@ if __name__ == "__main__":
             tcp_nxtseq = int(packet.tcp.nxtseq)
             tcp_ack = int(packet.tcp.ack)
             tcp_ack_raw = int(packet.tcp.ack_raw)
-            tcp_flags = str(packet.tcp.flags)
+            tcp_flags = str(packet.tcp.flags) #hex
             tcp_flags_res = int(packet.tcp.flags_res)
             tcp_flags_ns = int(packet.tcp.flags_ns)
             tcp_flags_cwr = int(packet.tcp.flags_cwr)
@@ -106,13 +110,14 @@ if __name__ == "__main__":
             proto_size = int(packet.arp.proto_size)
             hw_type = int(packet.arp.hw_type)
             hw_size = int(packet.arp.hw_size)
-            hw_opcode = str(packet.arp.opcode)
+            hw_opcode = int(packet.arp.opcode)
             src_hw_mac = str(packet.arp.src_hw_mac)
             ip_src = str(packet.arp.src_proto_ipv4)
             dst_hw_mac = str(packet.arp.dst_hw_mac)
             ip_dst = str(packet.arp.dst_proto_ipv4)
             proto_name = str(packet.arp.layer_name)
             ip_proto = 4
+            print(hw_size)
         else:
             proto_type = proto_size = hw_type = hw_size = hw_opcode = src_hw_mac = dst_hw_mac = None
 

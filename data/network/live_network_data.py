@@ -17,7 +17,7 @@ def get_live_network_data(interface, packet_amount):
     cap = pyshark.LiveCapture(interface=interface)
     cap.sniff(packet_amount)
     col_names = [
-        "date&time", "time", "duration", "source", "destination", "protocol", "protocol_name", "bytes", "service",
+        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes", "service",
         "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
         "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
