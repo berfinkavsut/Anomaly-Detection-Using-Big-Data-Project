@@ -123,6 +123,6 @@ def get_live_network_data(interface, packet_amount):
     return df
 
 
- #if __name__ == "__main__":
-  #   df = get_live_network_data("Wi-Fi",5)
-  #   print(df)
+if __name__ == "__main__":
+     df = get_live_network_data("Wi-Fi",5)
+     print(df)
