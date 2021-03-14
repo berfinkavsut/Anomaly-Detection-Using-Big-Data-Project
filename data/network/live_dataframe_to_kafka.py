@@ -20,7 +20,7 @@ if __name__ == "__main__":
     start = time.time()
 
     col_names = [
-        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes", "service",
+        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes", "dif_serv",
         "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
         "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
@@ -29,13 +29,11 @@ if __name__ == "__main__":
                 ]
     
     df = pd.DataFrame(columns=col_names)
-    prev_time=0
+    first = 1
     for packet in cap.sniff_continuously():
         # print("df    --- %s seconds ---" % (time.time() - start))
         date_time = str(packet.sniff_time)
         # check if TCP layer exist in the i'th packet
-        if "DATA" in packet:
-            print(packet.data.len)
 
 
         if "TCP" in packet:
@@ -70,17 +68,15 @@ if __name__ == "__main__":
 
         # check if UDP layer exist in the i'th packet        
         elif "UDP" in packet:
-            # print(packet.udp.payload)
             time_relative = float(packet.udp.time_relative)
-            srcport = str(packet.udp.srcport)
-            dstport = str(packet.udp.dstport)
+            srcport = int(packet.udp.srcport)
+            dstport = int(packet.udp.dstport)
             proto_len = int(packet.udp.length)
             stream = int(packet.udp.stream)
             proto_name = str(packet.udp.layer_name)
             checksum = str(packet.udp.checksum) #hex
             checksum_status = int(packet.udp.checksum_status)
             tcp_seq = tcp_seq_raw = tcp_nxtseq = tcp_ack = tcp_ack_raw = tcp_flags = tcp_flags_res = tcp_flags_ns = tcp_flags_cwr = tcp_flags_ecn = tcp_flags_urg = tcp_flags_ack = tcp_flags_push = tcp_flags_reset = tcp_flags_syn = tcp_flags_fin = tcp_flags_str = window_size_value = window_size = urgent_pointer = None
-
         # check if both TCP and UDP layers do not exist in the i'th packet assign None to related objects
         else:   
             time_relative = srcport = dstport = proto_len = tcp_seq = tcp_seq_raw = tcp_nxtseq = tcp_ack = tcp_ack_raw = tcp_flags = tcp_flags_res = tcp_flags_ns = tcp_flags_cwr = tcp_flags_ecn = tcp_flags_urg = tcp_flags_ack = tcp_flags_push = tcp_flags_reset = tcp_flags_syn = tcp_flags_fin = tcp_flags_str = window_size_value = window_size = checksum = checksum_status = urgent_pointer = proto_name = stream = None
@@ -117,9 +113,12 @@ if __name__ == "__main__":
             ip_dst = str(packet.arp.dst_proto_ipv4)
             proto_name = str(packet.arp.layer_name)
             ip_proto = 4
-            print(hw_size)
         else:
             proto_type = proto_size = hw_type = hw_size = hw_opcode = src_hw_mac = dst_hw_mac = None
+
+        if first == 1:
+            prev_time = float(packet.sniff_timestamp)
+            first = 0
 
         duration = float(packet.sniff_timestamp) - prev_time
 
@@ -134,6 +133,6 @@ if __name__ == "__main__":
             src_hw_mac, dst_hw_mac
                     ]
         prev_time = float(packet.sniff_timestamp)
-        p.send_stream(topic="Test", value=df)
+        p.send_stream(topic="test-data", value=df)
         # print(df)
 

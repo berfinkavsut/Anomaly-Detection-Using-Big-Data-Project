@@ -13,11 +13,12 @@ import pyshark
 # @param interface: the interface
 # @param timeout: time interval
 def get_live_network_data(interface, packet_amount):
-    # start = time.time()
+    start = time.time()
     cap = pyshark.LiveCapture(interface=interface)
     cap.sniff(packet_amount)
     col_names = [
-        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes", "service",
+        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes",
+        "dif_serv",
         "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
         "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
@@ -27,7 +28,7 @@ def get_live_network_data(interface, packet_amount):
     
     df = pd.DataFrame(columns=col_names)
     total_length = len(cap)
-    prev_time = 0
+    prev_time = float(cap[0].sniff_timestamp)
     for i in range(total_length):
         packet= cap[i]
         date_time = str(packet.sniff_time)
@@ -66,8 +67,8 @@ def get_live_network_data(interface, packet_amount):
         elif "UDP" in packet:
             # print(packet.udp.payload)
             time_relative = float(packet.udp.time_relative)
-            srcport = str(packet.udp.srcport)
-            dstport = str(packet.udp.dstport)
+            srcport = int(packet.udp.srcport)
+            dstport = int(packet.udp.dstport)
             proto_len = int(packet.udp.length)
             stream = int(packet.udp.stream)
             proto_name = str(packet.udp.layer_name)
