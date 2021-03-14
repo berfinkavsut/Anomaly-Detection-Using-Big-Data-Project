@@ -17,11 +17,11 @@ def get_live_network_data(interface, packet_amount):
     cap = pyshark.LiveCapture(interface=interface)
     cap.sniff(packet_amount)
     col_names = [
-        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "bytes",
+        "date&time", "time", "duration", "source_ip", "destination_ip", "protocol", "protocol_name", "packet_len",
         "dif_serv",
-        "flag", "ip_vers", "src_port", "dst_port", "proto_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
+        "flag", "ip_vers", "src_port", "dst_port", "data_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
         "tcp_flags", "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
-        "flags_reset", "flags_syn", "flags_fin", "flags_str", "win", "win_size", "checksum", "checksum_status",
+        "flags_reset", "flags_syn", "flags_fin", "flags_str", "win_size", "checksum", "checksum_status",
         "urgent_pointer", "stream", "proto_type", "proto_size", "hw_type", "hw_size", "hw_opcode", "src_hw_mac",
         "dst_hw_mac"
     ]
@@ -37,7 +37,7 @@ def get_live_network_data(interface, packet_amount):
             time_relative = float(packet.tcp.time_relative)
             srcport = int(packet.tcp.srcport)
             dstport = int(packet.tcp.dstport)
-            proto_len = int(packet.tcp.len)
+            data_len = int(packet.tcp.len)
             tcp_seq = int(packet.tcp.seq)
             tcp_seq_raw = int(packet.tcp.seq_raw)
             tcp_nxtseq = int(packet.tcp.nxtseq)
@@ -55,7 +55,6 @@ def get_live_network_data(interface, packet_amount):
             tcp_flags_syn = int(packet.tcp.flags_syn)
             tcp_flags_fin = int(packet.tcp.flags_fin)
             tcp_flags_str = str(packet.tcp.flags_str)
-            window_size_value = str(packet.tcp.window_size_value)
             window_size = int(packet.tcp.window_size)
             checksum = str(packet.tcp.checksum)  # hex
             checksum_status = int(packet.tcp.checksum_status)
@@ -69,7 +68,7 @@ def get_live_network_data(interface, packet_amount):
             time_relative = float(packet.udp.time_relative)
             srcport = int(packet.udp.srcport)
             dstport = int(packet.udp.dstport)
-            proto_len = int(packet.udp.length)
+            data_len = int(packet.udp.length)
             stream = int(packet.udp.stream)
             proto_name = str(packet.udp.layer_name)
             checksum = str(packet.udp.checksum)  # hex
@@ -78,7 +77,7 @@ def get_live_network_data(interface, packet_amount):
 
         # check if both TCP and UDP layers do not exist in the i'th packet assign None to related objects
         else:
-            time_relative = srcport = dstport = proto_len = tcp_seq = tcp_seq_raw = tcp_nxtseq = tcp_ack = tcp_ack_raw = tcp_flags = tcp_flags_res = tcp_flags_ns = tcp_flags_cwr = tcp_flags_ecn = tcp_flags_urg = tcp_flags_ack = tcp_flags_push = tcp_flags_reset = tcp_flags_syn = tcp_flags_fin = tcp_flags_str = window_size_value = window_size = checksum = checksum_status = urgent_pointer = proto_name = stream = None
+            time_relative = srcport = dstport = data_len = tcp_seq = tcp_seq_raw = tcp_nxtseq = tcp_ack = tcp_ack_raw = tcp_flags = tcp_flags_res = tcp_flags_ns = tcp_flags_cwr = tcp_flags_ecn = tcp_flags_urg = tcp_flags_ack = tcp_flags_push = tcp_flags_reset = tcp_flags_syn = tcp_flags_fin = tcp_flags_str = window_size_value = window_size = checksum = checksum_status = urgent_pointer = proto_name = stream = None
 
         # check if IP (ipv4) layer exist in the i'th packet
         if "IP" in packet:
@@ -104,7 +103,7 @@ def get_live_network_data(interface, packet_amount):
             proto_size = int(packet.arp.proto_size)
             hw_type = int(packet.arp.hw_type)
             hw_size = int(packet.arp.hw_size)
-            hw_opcode = str(packet.arp.opcode)
+            hw_opcode = int(packet.arp.opcode)
             src_hw_mac = str(packet.arp.src_hw_mac)
             ip_src = str(packet.arp.src_proto_ipv4)
             dst_hw_mac = str(packet.arp.dst_hw_mac)
@@ -115,14 +114,14 @@ def get_live_network_data(interface, packet_amount):
             proto_type = proto_size = hw_type = hw_size = hw_opcode = src_hw_mac = dst_hw_mac = None
 
         duration = float(packet.sniff_timestamp) - prev_time
-
+        pkt_length = int(packet.length)
         # adding the i'th packets information to the i'th row at the dataframe
         df.loc[i] = [
             date_time, time_relative, duration, ip_src, ip_dst, ip_proto, proto_name,
-            packet.length, ip_dsfield, ip_flags, ip_version, srcport, dstport,
-            proto_len, tcp_seq, tcp_seq_raw, tcp_nxtseq, tcp_ack, tcp_ack_raw, tcp_flags, tcp_flags_res,
+            pkt_length, ip_dsfield, ip_flags, ip_version, srcport, dstport,
+            data_len, tcp_seq, tcp_seq_raw, tcp_nxtseq, tcp_ack, tcp_ack_raw, tcp_flags, tcp_flags_res,
             tcp_flags_ns, tcp_flags_cwr, tcp_flags_ecn, tcp_flags_urg, tcp_flags_ack, tcp_flags_push, tcp_flags_reset,
-            tcp_flags_syn, tcp_flags_fin, tcp_flags_str, window_size_value, window_size,
+            tcp_flags_syn, tcp_flags_fin, tcp_flags_str, window_size,
             checksum, checksum_status, urgent_pointer, stream, proto_type, proto_size, hw_type, hw_size, hw_opcode,
             src_hw_mac, dst_hw_mac
         ]
