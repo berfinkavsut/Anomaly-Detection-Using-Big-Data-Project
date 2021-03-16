@@ -33,7 +33,7 @@ class AnimateLive:
         if y_labels is not None:
             for i in range(len(self.ax)):
                 self.ax[i].set_ylabel(y_labels[i])
-                self.ax[i].set_ylim([0, 1])
+                self.ax[i].set_ylim([-0.2, 1.2])
 
         self.values = [[0] for i in range(len(self.ax))]
         self.time = [-1]
@@ -78,4 +78,4 @@ class AnimateLive:
                 continue
 
         fig.canvas.draw()
-        plt.pause(.1)
+        plt.pause(.05)

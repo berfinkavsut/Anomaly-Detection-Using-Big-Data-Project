@@ -5,6 +5,7 @@ from flow import DataConsumer
 from transformers.network_data_transformer import network_data_transformer
 from custom_modules.feature_extractor import FeatureExtractor
 import pandas as pd
+import numpy as np
 
 
 class SystemFlow:
@@ -23,15 +24,15 @@ class SystemFlow:
     def get_next(self, topic):
         data = next(self.streams[topic])
         #todo:
-        df = pd.DataFrame(data.reshape(1, -1), columns=["a", "b", "d", "a2", "b2", "d2", "a3", "b3", "d3"])
-        print(df)
-        #transformed = data
-        #transformed = network_data_transformer(data)
+        #df = pd.DataFrame(data.reshape(1, -1), columns=["a", "b", "d", "a2", "b2", "d2", "a3", "b3", "d3"])
+        #print(df)
+        transformed = network_data_transformer(data)
         if self.fe:
-            a = self.extractor.fit_transform(df)
-            print(a)
-            return a
-        #return transformed
+            a = self.extractor.fit_transform(transformed)
+            result = a['autoencoder'].to_numpy()  # df
+            print('FE output')
+            print(result)
+        return result
 
     def fit_next(self, topic):
         next_data = self.get_next(topic)

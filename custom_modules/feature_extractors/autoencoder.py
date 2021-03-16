@@ -41,7 +41,7 @@ class Autoencoder(BaseFeatureExtractor):
                                    activation='relu',
                                    name='encoder')(self.input)
         self.bottleneck = Dense(self.latent_dim,
-                                activation='relu',
+                                activation='tanh',
                                 name='bottleneck')(self.encoder_layer)
         self.decoder_layer = Dense(self.n_features,
                                    activation='relu',
