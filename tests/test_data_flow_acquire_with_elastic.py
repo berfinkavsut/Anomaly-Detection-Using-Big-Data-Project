@@ -24,9 +24,13 @@ psw = "jjosLBNU9NmTsU5vatFU"
 access_url = f"http://{user}:{psw}@localhost:9200/"
 es = Elasticsearch(hosts=access_url)
 
+index = "test_flow"
+es.indices.delete(index=index, ignore=[400, 404])
 
 i = 0
 while True:
+
+
 
     if i < 10:
         system_flow.fit_next(topic)
@@ -41,12 +45,12 @@ while True:
         df = df1.join(df2.join(df3.join(df4)))
         data = df.to_dict('records')
 
-        res = es.create(index="test-flow", id=i+1, body=data[0])
+        res = es.create(index=index, id=i+1, body=data[0])
         print(res['result'])
 
-        es.indices.refresh(index="test-flow")
+        es.indices.refresh(index=index)
 
-        res = es.search(index="test-flow", body={"query": {"match_all": {}}})
+        res = es.search(index=index, body={"query": {"match_all": {}}})
         print("Got %d Hits:" % res['hits']['total']['value'])
 
         time.sleep(1)

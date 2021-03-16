@@ -1,34 +1,46 @@
+import socket
 import certifi
 from confluent_kafka import Consumer, KafkaError
 import pickle
 
 class DataConsumer(Consumer):
 
-    def __init__(self, deserializer=pickle.loads):
+    def __init__(self, deserializer=pickle.loads, config="local", verbose=True):
 
-        conf = {
-            'bootstrap.servers': 'pkc-4r297.europe-west1.gcp.confluent.cloud:9092',
-            "security.protocol": "",
-            "sasl.mechanisms": "",
-            "sasl.username": "54KW7VWPPTJIL74Y",
-            "sasl.password": "UpsXcoDKhvgz5v5w47fuFwEpV9WidGUdLLt7YKzT69U/0jS6Pb321qKepzzSAdOF",
-            "security.protocol": "SASL_SSL",
-            "sasl.mechanisms": "PLAIN",
-            "ssl.ca.location": certifi.where(),
-            'group.id': 'mygroup',
-            'client.id': 'client-1',
-            'enable.auto.commit': True,
-            'session.timeout.ms': 6000,
-            'default.topic.config': {'auto.offset.reset': 'smallest'}
-        }
+        if config is "local":
+            conf = {'bootstrap.servers': 'localhost:9092',
+                    'group.id': 'mygroup',
+                    'enable.auto.commit': True,
+                    'default.topic.config': {'auto.offset.reset': 'smallest'}}
+
+        elif config is "cloud":
+
+            conf = {
+                'bootstrap.servers': 'pkc-4r297.europe-west1.gcp.confluent.cloud:9092',
+                "security.protocol": "",
+                "sasl.mechanisms": "",
+                "sasl.username": "54KW7VWPPTJIL74Y",
+                "sasl.password": "UpsXcoDKhvgz5v5w47fuFwEpV9WidGUdLLt7YKzT69U/0jS6Pb321qKepzzSAdOF",
+                "security.protocol": "SASL_SSL",
+                "sasl.mechanisms": "PLAIN",
+                "ssl.ca.location": certifi.where(),
+                'group.id': 'mygroup',
+                'client.id': 'client-1',
+                'enable.auto.commit': True,
+                'session.timeout.ms': 6000,
+                'default.topic.config': {'auto.offset.reset': 'smallest'}
+            }
+        else:
+            raise Exception("The config option has to be cloud or local")
+
 
         super().__init__(conf)
         self.deserializer = deserializer
+        self.verbose = verbose
 
     def stream_data(self, topic=None):
 
         super().subscribe([topic])
-
         try:
 
             while True:
@@ -36,14 +48,13 @@ class DataConsumer(Consumer):
                 msg = super().poll(0.1)
 
                 if msg is None:
-
                     continue
 
                 elif not msg.error():
 
                     value = self.deserializer(msg.value())
-
-                    print(f'Received message: {value}')
+                    if self.verbose:
+                        print(f'Received message: {value}')
 
                     yield value
 

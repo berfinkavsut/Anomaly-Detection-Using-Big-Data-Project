@@ -2,12 +2,18 @@ import scipy.io
 import numpy as np
 from flow.producer import DataProducer
 import time
+import pandas as pd
 
 
-data = scipy.io.loadmat('../data/shuttle.mat')  # %7 anomaly rate
-X = np.asarray(data["X"])
-Y = np.asarray(data["y"])
-length = 10000  # X.shape[0]
+# data = scipy.io.loadmat('../data/shuttle.mat')  # %7 anomaly rate
+# X = np.asarray(data["X"])
+# Y = np.asarray(data["y"])
+
+data = np.asarray(pd.read_csv('../data/hello_2'))
+X = np.asarray(data[:, 1:-1])
+Y = np.asarray(data[:, -1])
+
+length = 1000  # X.shape[0]
 X_train = X[:length]
 Y_train = Y[:length]
 

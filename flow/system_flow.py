@@ -6,9 +6,9 @@ from flow import DataConsumer
 
 class SystemFlow:
 
-    def __init__(self, num_features, props, ens_props=None):
+    def __init__(self, num_features, props, ens_props=None,  verbose=True):
         self.train = Train(num_features=num_features, model_properties=props, ensemble_model_properties=ens_props)
-        self.consumer = DataConsumer()
+        self.consumer = DataConsumer(verbose)
         self.streams = {}
 
     def create_stream(self, topic):
@@ -41,7 +41,7 @@ class SystemFlow:
                     pickle.dump(models[key], file)
 
         if ensemble_models is not None:
-            Path(f"{path}/models").mkdir(parents=True, exist_ok=True)
+            Path(f"{path}/ensemble_models").mkdir(parents=True, exist_ok=True)
             for key in ensemble_models.keys():
                 with open(f"{path}/ensemble_models/{key}", 'wb') as file:
                     pickle.dump(ensemble_models[key], file)
