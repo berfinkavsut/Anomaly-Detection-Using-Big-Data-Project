@@ -2,20 +2,22 @@ import pickle
 from pathlib import Path
 from flow import Train
 from flow import DataConsumer
+from transformers.network_data_transformer import network_data_transformer
 
 
 class SystemFlow:
 
-    def __init__(self, num_features, props, ens_props=None,  verbose=True):
+    def __init__(self, num_features, props, ens_props=None, config = "cloud", verbose=True):
         self.train = Train(num_features=num_features, model_properties=props, ensemble_model_properties=ens_props)
-        self.consumer = DataConsumer(verbose)
+        self.consumer = DataConsumer(config=config, verbose=verbose)
         self.streams = {}
 
     def create_stream(self, topic):
         self.streams[topic] = self.consumer.stream_data(topic)
 
     def get_next(self, topic):
-        return next(self.streams[topic])[0]
+        data = next(self.streams[topic])[0]
+        return network_data_transformer(data)
 
     def fit_next(self, topic):
         next_data = self.get_next(topic)

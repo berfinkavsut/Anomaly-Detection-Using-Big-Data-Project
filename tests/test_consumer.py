@@ -1,7 +1,7 @@
 from flow.consumer import DataConsumer
 
-c = DataConsumer()
-streamer = c.stream_data("saa")
+c = DataConsumer(config="cloud")
+streamer = c.stream_data("test-data")
 
 for data in streamer:
     print(data)

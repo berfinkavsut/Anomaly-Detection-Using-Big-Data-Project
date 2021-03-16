@@ -16,7 +16,7 @@ from flow.producer import DataProducer
 # @param timeout: time interval
 if __name__ == "__main__":
     cap = pyshark.LiveCapture("Wi-Fi")
-    p = DataProducer()
+    p = DataProducer(config="cloud")
     start = time.time()
 
     col_names = [
