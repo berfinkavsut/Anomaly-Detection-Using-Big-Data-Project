@@ -5,22 +5,31 @@ from flow import DataConsumer
 from transformers.network_data_transformer import network_data_transformer
 from custom_modules.feature_extractor import FeatureExtractor
 import pandas as pd
+from elasticsearch import Elasticsearch
+from datetime import datetime
 import numpy as np
 
 
 class SystemFlow:
 
-    def __init__(self, num_features, props, ens_props=None, config="cloud", fe=False, fe_config=None, verbose=True):
+    def __init__(self, num_features, props, ens_props=None, config="cloud", fe=False, fe_config=None, user="elastic",
+                 psw="changeme", elk_index="test_flow", verbose=True):
 
         self.train = Train(num_features=num_features, model_properties=props, ensemble_model_properties=ens_props)
-        self.consumer = DataConsumer(config=config, verbose=verbose)
-        self.streams = {}
-        self.fe = fe
 
+        self.consumer = DataConsumer(config=config, verbose=verbose)
+
+        access_url = f"http://{user}:{psw}@localhost:9200/"
+        self.es = Elasticsearch(hosts=access_url)
+        self.es.indices.delete(index=elk_index, ignore=[400, 404])
+        self.elk_index = elk_index
+
+        self.streams = {}
+
+        self.fe = fe
         if self.fe:
             self.extractor = FeatureExtractor(**fe_config)
             self.extractor_trained = False
-
 
 
     def train_extractor(self, topic, iteration=100):
@@ -36,31 +45,31 @@ class SystemFlow:
 
     def get_next(self, topic):
 
-        data = next(self.streams[topic])
-        transformed = network_data_transformer(data)
+        original_data = next(self.streams[topic])
+        transformed = network_data_transformer(original_data)
 
-        if self.fe and self.extractor_trained:
+        if self.fe:
             result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
         else:
             result = transformed
 
-        return result
-
+        return result, original_data
 
 
     def fit_next(self, topic):
-        next_data = self.get_next(topic)
+        next_data, original_data = self.get_next(topic)
         self.train.fit(next_data)
-        return next_data
+        return next_data, original_data
 
     def predict_next(self, topic):
-        next_data = self.get_next(topic)
-        return (*self.train.predict(next_data), next_data)
+        next_data, original_data = self.get_next(topic)
+        self.send_to_elk(original_data, *self.train.predict(next_data))
+        return (next_data, original_data, *self.train.predict(next_data))
 
     def fit_predict_next(self, topic):
-        next_data = self.get_next(topic)
+        next_data, original_data = self.get_next(topic)
         self.train.fit(next_data)
-        return (*self.train.predict(next_data), next_data)
+        return (next_data, original_data, *self.train.predict(next_data))
 
     def save_trained_models(self, path="saved_models"):
         models, ensemble_models = self.train.get_models()
@@ -76,3 +85,21 @@ class SystemFlow:
             for key in ensemble_models.keys():
                 with open(f"{path}/ensemble_models/{key}", 'wb') as file:
                     pickle.dump(ensemble_models[key], file)
+
+    def send_to_elk(self, original_data, probs, ens_probs):
+
+        probs_df = pd.DataFrame.from_dict(probs)
+        ens_probs_df = pd.DataFrame.from_dict(ens_probs)
+        timestamp = datetime.utcnow()
+        timestamp_df = pd.DataFrame.from_dict({"@timestamp": [timestamp]})
+
+        df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
+        data = df.to_dict('records')
+
+        res = self.es.create(index=self.elk_index, id=timestamp, body=data[0])
+        print(res['result'])
+
+        self.es.indices.refresh(index=self.elk_index)
+
+        res = self.es.search(index=self.elk_index, body={"query": {"match_all": {}}})
+        print("Got %d Hits:" % res['hits']['total']['value'])

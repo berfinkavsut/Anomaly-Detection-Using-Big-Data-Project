@@ -36,7 +36,7 @@ fe_config = {"selected_feature_extractors": selected_feature_extractors, "select
 system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, verbose=True)
 topic = "beste"
 system_flow.create_stream(topic)
-system_flow.train_extractor(topic, iteration=100)
+#system_flow.train_extractor(topic, iteration=100)#
 anim = AnimateLive(ax_num=6, x_labels=["Time"] * 6, y_labels=["xStream", "IForest", "Loda", "Ensemble (IForest and Loda)",
                                                     "Ensemble (Loda and xStream)", "Ensemble (xStream and IForest)"])
 i = 0
