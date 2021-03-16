@@ -1,3 +1,0 @@
-#!C:\Users\sevki\PycharmProjects\network-anomaly-detection\3\Scripts\python.exe
-from numba.pycc import main
-main()
