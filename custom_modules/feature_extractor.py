@@ -8,14 +8,14 @@ from custom_modules.feature_extractors.word_embedding import WordEmbedding
 
 
 class FeatureExtractor:
-    def __init__(self, selected_feature_extractors, selected_features, param, sample_no):
+    def __init__(self, selected_feature_extractors, selected_features, param):
         """
 
         :param selected_features: selected features to apply feature extractors for each extractor
         :param param: parameters for models given as a dictionary of dictionaries
         :param sample_no: fixed sample number coming as batches
         """
-
+        print(selected_feature_extractors)
         # all available feature extractors
         self.feature_extractors_map = {'autoencoder': Autoencoder,
                                        'basic_extractor': BasicExtractor,
@@ -32,7 +32,7 @@ class FeatureExtractor:
 
         self.feature_extractors = self.create_extractors()
 
-        self.sample_no = sample_no  # seems that it is not used now ?
+        #self.sample_no = sample_no  # seems that it is not used now ?
         self.features_extracted = {}
 
     def create_extractors(self):
@@ -43,6 +43,7 @@ class FeatureExtractor:
 
         feature_extractors = {}
         for key in self.selected_feature_extractors:
+            print(key)
             args = [self.param[key], self.selected_features[key]]
             feature_extractors[key] = self.feature_extractors_map[key](*args)
 
