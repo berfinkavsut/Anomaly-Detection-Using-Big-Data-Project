@@ -19,17 +19,16 @@ class SystemFlow:
 
         if self.fe:
             self.extractor = FeatureExtractor(**fe_config)
+            self.extractor_trained = False
 
 
 
     def train_extractor(self, topic, iteration=100):
 
-        next_data = self.get_next(topic)
-        self.data_columns = next_data
-
         for i in range(iteration):
+            next_data = self.get_next(topic)
             self.extractor.fit(next_data)
-
+        self.extractor_trained = True
 
     def create_stream(self, topic):
         self.streams[topic] = self.consumer.stream_data(topic)
@@ -40,7 +39,7 @@ class SystemFlow:
         data = next(self.streams[topic])
         transformed = network_data_transformer(data)
 
-        if self.fe:
+        if self.fe and self.extractor_trained:
             result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
         else:
             result = transformed
