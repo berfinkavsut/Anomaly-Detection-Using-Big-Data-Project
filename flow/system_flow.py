@@ -1,12 +1,13 @@
 import pickle
 from pathlib import Path
+import pytz
 from flow import Train
 from flow import DataConsumer
 from transformers.network_data_transformer import network_data_transformer
 from custom_modules.feature_extractor import FeatureExtractor
 import pandas as pd
 from elasticsearch import Elasticsearch
-from datetime import datetime
+from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
@@ -87,19 +88,24 @@ class SystemFlow:
                 with open(f"{path}/ensemble_models/{key}", 'wb') as file:
                     pickle.dump(ensemble_models[key], file)
 
+
+
     def send_to_elk(self, original_data, probs, ens_probs):
+
+        timestamp = datetime.strptime(original_data.at[0, "date&time"], '%Y-%m-%d %H:%M:%S.%f').astimezone(pytz.utc)
+        # timestamp = pytz.timezone("").localize(timestamp)
+
 
         probs_df = pd.DataFrame.from_dict(probs)
         ens_probs_df = pd.DataFrame.from_dict(ens_probs)
-        timestamp = pd.to_datetime(original_data["date&time"])
-        print(timestamp, type(timestamp))
-
         timestamp_df = pd.DataFrame.from_dict({"@timestamp": [timestamp]})
 
         df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
         data = df.to_dict('records')
 
-        res = self.es.create(index=self.elk_index, id=timestamp, body=data[0])
+        print(datetime.utcnow(), timestamp)
+
+        res = self.es.create(index=self.elk_index, id=datetime.utcnow(), body=data[0])
         print(res['result'])
 
         self.es.indices.refresh(index=self.elk_index)

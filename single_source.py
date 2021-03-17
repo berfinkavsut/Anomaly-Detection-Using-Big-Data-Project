@@ -43,7 +43,7 @@ def single_process(topic="Test"):
 
     i = 0
     while True:
-        if i < 50:
+        if i < 2:
             system_flow.fit_next(topic)
             i += 1
         else:
