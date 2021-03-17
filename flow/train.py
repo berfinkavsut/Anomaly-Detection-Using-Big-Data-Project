@@ -1,5 +1,5 @@
 import numpy as np
-from models import Loda, XStream, IForest
+from models import Loda, XStream, IForest, KnnCad, RRCF
 
 
 
@@ -23,6 +23,8 @@ class Train:
             'Loda': Loda,
             'xStream': XStream,
             'IForest': IForest,
+            'KnnCad': KnnCad,
+            'RRCF': RRCF,
             # 'KitNet': KitNet,
         }
         self.models = {}  # Dictionary of models

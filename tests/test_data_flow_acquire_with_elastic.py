@@ -2,7 +2,7 @@ import time
 from flow.system_flow import SystemFlow
 import pandas as pd
 
-props = {'xStream': {}, 'IForest': {}, 'Loda': {}}
+props = {'xStream': {}, 'IForest': {}, 'Loda': {}, 'RRCF': {'num_trees':8, 'shingle_size':8}}
 
 ens_props = {'Ensemble (IForest and Loda)': {'IForest': {}, 'Loda': {}},
              'Ensemble (Loda and xStream)': {'Loda': {}, 'xStream': {}},
@@ -47,6 +47,7 @@ while True:
     else:
         s = time.time()
         reduced_data, original_data, probs, ens_probs = system_flow.fit_predict_next(topic)
+
         system_flow.send_to_elk(original_data, probs, ens_probs)
 
 

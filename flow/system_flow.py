@@ -49,7 +49,9 @@ class SystemFlow:
         transformed = network_data_transformer(original_data)
 
         if self.fe:
+
             result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
+
         else:
             result = transformed
 
@@ -58,12 +60,15 @@ class SystemFlow:
 
     def fit_next(self, topic):
         next_data, original_data = self.get_next(topic)
+
         self.train.fit(next_data)
         return next_data, original_data
 
     def predict_next(self, topic):
         next_data, original_data = self.get_next(topic)
+
         self.send_to_elk(original_data, *self.train.predict(next_data))
+
         return (next_data, original_data, *self.train.predict(next_data))
 
     def fit_predict_next(self, topic):
