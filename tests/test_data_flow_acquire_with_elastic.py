@@ -1,6 +1,5 @@
 import time
 from flow.system_flow import SystemFlow
-import pandas as pd
 
 props = {'xStream': {}, 'IForest': {}, 'Loda': {}, 'RRCF': {'num_trees':8, 'shingle_size':8}}
 
@@ -33,7 +32,7 @@ fe_config = {"selected_feature_extractors": selected_feature_extractors, "select
 
 topic = "beste"
 system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
-                 psw="changeme", elk_index="test_flow", verbose=True)
+                 psw="sBnnldRLdLiJmZotTSbo", elk_index="test_flow", verbose=True)
 
 system_flow.create_stream(topic)
 
@@ -41,7 +40,7 @@ system_flow.create_stream(topic)
 
 i = 0
 while True:
-    if i < 2:
+    if i < 50:
         system_flow.fit_next(topic)
         i += 1
     else:
