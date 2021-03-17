@@ -8,6 +8,7 @@ import pandas as pd
 from elasticsearch import Elasticsearch
 from datetime import datetime
 import numpy as np
+import pandas as pd
 
 
 class SystemFlow:
@@ -90,7 +91,9 @@ class SystemFlow:
 
         probs_df = pd.DataFrame.from_dict(probs)
         ens_probs_df = pd.DataFrame.from_dict(ens_probs)
-        timestamp = datetime.utcnow()
+        timestamp = pd.to_datetime(original_data["date&time"])
+        print(timestamp, type(timestamp))
+
         timestamp_df = pd.DataFrame.from_dict({"@timestamp": [timestamp]})
 
         df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
