@@ -1,5 +1,7 @@
 import time
 from flow.system_flow import SystemFlow
+import numpy as np
+from alert import Alert
 
 props = {'xStream': {}, 'IForest': {}, 'Loda': {}, 'RRCF': {'num_trees':8, 'shingle_size':8}}
 
@@ -30,24 +32,46 @@ selected_feature_extractors = ['autoencoder']
 
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
-topic = "beste"
+topic = "device2"
 system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
-                 psw="sBnnldRLdLiJmZotTSbo", elk_index="test_flow", verbose=True)
+                 psw="changeme", elk_index="test_flow", verbose=True)
+
 
 system_flow.create_stream(topic)
 
-
+thresholds= {'0.5': [0.5], '0.6': [0.6]}
 
 i = 0
+
+alarm = Alert()
 while True:
-    if i < 50:
+    if i < 2:
         system_flow.fit_next(topic)
         i += 1
     else:
+
         s = time.time()
         reduced_data, original_data, probs, ens_probs = system_flow.fit_predict_next(topic)
 
-        system_flow.send_to_elk(original_data, probs, ens_probs)
+        #Threshold and alert
+        threshold = system_flow.return_threshold()
+
+        probsarray = []
+        for key in probs:
+            probsarray.append(probs[key][0])
+
+        for key in ens_probs:
+            probsarray.append(ens_probs[key][0])
+
+        max_prob = max(probsarray)
+        #print("maxprob" , max_prob)
+
+        if threshold < max_prob:
+            alarm.send_email()
+
+
+        # Send to elastic
+        system_flow.send_to_elk(original_data, probs, ens_probs, thresholds)
 
 
 

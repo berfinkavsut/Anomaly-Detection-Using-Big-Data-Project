@@ -33,6 +33,17 @@ class SystemFlow:
             self.extractor = FeatureExtractor(**fe_config)
             self.extractor_trained = False
 
+    def return_threshold(self):
+        body = {
+            "query": {
+                "terms": {
+                    "_id": ["1"]
+                }
+            }
+        }
+        searchRes = self.es.search(index="hyperparameters", body=body)
+        return searchRes['hits']['hits'][0]["_source"]["threshold"]
+
 
     def train_extractor(self, topic, iteration=100):
 
@@ -95,20 +106,23 @@ class SystemFlow:
 
 
 
-    def send_to_elk(self, original_data, probs, ens_probs):
+    def send_to_elk(self, original_data, probs, ens_probs, thresholds):
 
         timestamp = datetime.strptime(original_data.at[0, "date&time"], '%Y-%m-%d %H:%M:%S.%f').astimezone(pytz.utc)
-        # timestamp = pytz.timezone("").localize(timestamp)
+        timestamp = datetime.utcnow()
+        thresholds_df = pd.DataFrame(data=thresholds)
 
 
         probs_df = pd.DataFrame.from_dict(probs)
         ens_probs_df = pd.DataFrame.from_dict(ens_probs)
         timestamp_df = pd.DataFrame.from_dict({"@timestamp": [timestamp]})
 
-        df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
+        #df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
+        df = original_data.join(probs_df.join(ens_probs_df.join(thresholds_df.join(timestamp_df))))
+
         data = df.to_dict('records')
 
-        print(datetime.utcnow(), timestamp)
+
 
         res = self.es.create(index=self.elk_index, id=datetime.utcnow(), body=data[0])
         print(res['result'])
