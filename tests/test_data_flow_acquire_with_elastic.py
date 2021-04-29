@@ -39,7 +39,7 @@ system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe
 
 system_flow.create_stream(topic)
 
-thresholds= {'0.5': [0.5], '0.6': [0.6]}
+thresholds= {'0.5': [0.5]}
 
 i = 0
 
@@ -64,14 +64,16 @@ while True:
             probsarray.append(ens_probs[key][0])
 
         max_prob = max(probsarray)
-        #print("maxprob" , max_prob)
+        print("maxprob" , max_prob)
 
         if threshold < max_prob:
             alarm.send_email()
 
+        thresholds = {'threshold': [threshold]}
 
         # Send to elastic
         system_flow.send_to_elk(original_data, probs, ens_probs, thresholds)
+
 
 
 

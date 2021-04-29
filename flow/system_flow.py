@@ -41,7 +41,7 @@ class SystemFlow:
                 }
             }
         }
-        searchRes = self.es.search(index="hyperparameters", body=body)
+        searchRes = self.es.search(index="thresholds", body=body)
         return searchRes['hits']['hits'][0]["_source"]["threshold"]
 
 
