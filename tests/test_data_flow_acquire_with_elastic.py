@@ -75,6 +75,17 @@ while True:
         system_flow.send_to_elk(original_data, probs, ens_probs, thresholds)
 
 
+        # # Update hyperparameters
+        # hyperparameters = system_flow.return_hyperparameter()
+        #
+        # if old_hyp != hyperparameters:
+        #     system_flow.update(hyperparameters)
+        #
+        # old_hyp = hyperparameters
+
+
+
+
 
 
 

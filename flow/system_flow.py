@@ -33,6 +33,21 @@ class SystemFlow:
             self.extractor = FeatureExtractor(**fe_config)
             self.extractor_trained = False
 
+    def update(self, hyp):
+        self.train = Train
+
+
+    def return_hyperparameter(self):
+        body = {
+            "query": {
+                "terms": {
+                    "_id": ["1"]
+                }
+            }
+        }
+        searchRes = self.es.search(index="hyperparameters", body=body)
+        return searchRes['hits']['hits'][0]["_source"]
+
     def return_threshold(self):
         body = {
             "query": {
