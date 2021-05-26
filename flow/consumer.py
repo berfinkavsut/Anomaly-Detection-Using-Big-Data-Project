@@ -5,7 +5,7 @@ import pickle
 
 class DataConsumer(Consumer):
 
-    def __init__(self, deserializer=pickle.loads, config="local", verbose=True):
+    def __init__(self, topic=None, deserializer=pickle.loads, config="local", verbose=True):
 
         if config is "local":
             conf = {'bootstrap.servers': 'localhost:9092',
@@ -37,10 +37,18 @@ class DataConsumer(Consumer):
         super().__init__(conf)
         self.deserializer = deserializer
         self.verbose = verbose
-
-    def stream_data(self, topic=None):
+        self.topic = topic
+        self.rand = "Hello"
 
         super().subscribe([topic])
+
+
+    def __iter__(self):
+        return self
+
+
+    def __next__(self):
+
         try:
 
             while True:
@@ -56,7 +64,7 @@ class DataConsumer(Consumer):
                     if self.verbose:
                         print(f'Received message: {value}')
 
-                    yield value
+                    return value
 
                 elif msg.error().code() == KafkaError._PARTITION_EOF:
 
@@ -68,12 +76,14 @@ class DataConsumer(Consumer):
 
 
         except KeyboardInterrupt:
-            pass
-
-        finally:
             super().close()
+            raise StopIteration()
 
 
-    #
-    #
-    # def create_batch(self, topic=None, batch_size=64):
+
+
+
+
+
+
+

@@ -1,7 +1,6 @@
 import unittest
 from flow.train import Train
 import numpy as np
-from tests.plot_for_p3 import plot_for_p3
 import scipy.io
 import pandas as pd
 

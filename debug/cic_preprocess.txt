@@ -1,0 +1,13 @@
+data_cic = pd.read_csv(path_cic)
+data_cic=data_cic[~data_cic.isin([np.nan, np.inf, -np.inf]).any(1)]
+data_cic=data_cic.dropna()
+data_cic=data_cic.fillna(data_cic.median())
+labels_cic=data_cic.iloc[:,-1:]
+labels_cic=labels_cic.to_numpy()
+
+data_cic=data_cic.to_numpy()
+data_cic=data_cic[ : , 0:-1]
+labels_cic=np.where(labels_cic=='BENIGN', 0, labels_cic)
+labels_cic=np.where(labels_cic=='DDoS', 1, labels_cic)
+data_cic = data_cic.astype(np.float)
+data_cic = StandardScaler().fit_transform(data_cic)

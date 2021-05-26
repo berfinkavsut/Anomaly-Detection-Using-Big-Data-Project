@@ -22,7 +22,7 @@ def single_process(topic="Test"):
              'loss': 'mse', }
     }
 
-    col_names = ["time", "duration", "source_ip", "destination_ip", "protocol", "packet_len", "dif_serv",
+    col_names = ["duration", "source_ip", "destination_ip", "protocol", "packet_len", "dif_serv",
                  "flag", "ip_vers", "src_port", "dst_port", "data_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
                  "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
                  "flags_reset", "flags_syn", "flags_fin", "win_size", "checksum", "checksum_status",
@@ -37,7 +37,7 @@ def single_process(topic="Test"):
 
 
     system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
-                             psw="sBnnldRLdLiJmZotTSbo", elk_index="test_flow", verbose=True)
+                             psw="sBnnldRLdLiJmZotTSbo", verbose=True)
 
     system_flow.create_stream(topic)
 
@@ -47,11 +47,10 @@ def single_process(topic="Test"):
             system_flow.fit_next(topic)
             i += 1
         else:
-            s = time.time()
             reduced_data, original_data, probs, ens_probs = system_flow.fit_predict_next(topic)
-            system_flow.send_to_elk(original_data, probs, ens_probs)
+            system_flow.send_to_elk(original_data, probs, ens_probs, topic)
 
 
 if __name__ == "__main__":
-    single_process("beste")
+    single_process("device1")
 

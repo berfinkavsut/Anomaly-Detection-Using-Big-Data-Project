@@ -1,8 +1,8 @@
 from flow.consumer import DataConsumer
 
-c = DataConsumer(config="cloud")
-streamer = c.stream_data("test-data")
+c = DataConsumer(config="cloud", topic="device1")
 
-for data in streamer:
-    print(data)
+while True:
+    print(next(c))
+
 
