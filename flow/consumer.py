@@ -5,7 +5,7 @@ import pickle
 
 class DataConsumer(Consumer):
 
-    def __init__(self, topic=None, deserializer=pickle.loads, config="local", verbose=True):
+    def __init__(self, deserializer=pickle.loads, config="local", verbose=True):
 
         if config is "local":
             conf = {'bootstrap.servers': 'localhost:9092',
@@ -16,11 +16,11 @@ class DataConsumer(Consumer):
         elif config is "cloud":
 
             conf = {
-                'bootstrap.servers': 'pkc-4r297.europe-west1.gcp.confluent.cloud:9092',
+                'bootstrap.servers': 'pkc-lzvrd.us-west4.gcp.confluent.cloud:9092',
                 "security.protocol": "",
                 "sasl.mechanisms": "",
-                "sasl.username": "54KW7VWPPTJIL74Y",
-                "sasl.password": "UpsXcoDKhvgz5v5w47fuFwEpV9WidGUdLLt7YKzT69U/0jS6Pb321qKepzzSAdOF",
+                "sasl.username": "PAMBITHEWTHX3PP4",
+                "sasl.password": "G8QVRHA85d9yZRt7z2olWWij8MSfVhTxAbxr/pu43YJL6WXQwe0ml5q8JyaVj2w9",
                 "security.protocol": "SASL_SSL",
                 "sasl.mechanisms": "PLAIN",
                 "ssl.ca.location": certifi.where(),
@@ -37,18 +37,10 @@ class DataConsumer(Consumer):
         super().__init__(conf)
         self.deserializer = deserializer
         self.verbose = verbose
-        self.topic = topic
-        self.rand = "Hello"
+
+    def stream_data(self, topic=None):
 
         super().subscribe([topic])
-
-
-    def __iter__(self):
-        return self
-
-
-    def __next__(self):
-
         try:
 
             while True:
@@ -64,7 +56,7 @@ class DataConsumer(Consumer):
                     if self.verbose:
                         print(f'Received message: {value}')
 
-                    return value
+                    yield value
 
                 elif msg.error().code() == KafkaError._PARTITION_EOF:
 
@@ -76,14 +68,12 @@ class DataConsumer(Consumer):
 
 
         except KeyboardInterrupt:
+            pass
+
+        finally:
             super().close()
-            raise StopIteration()
 
 
-
-
-
-
-
-
-
+    #
+    #
+    # def create_batch(self, topic=None, batch_size=64):

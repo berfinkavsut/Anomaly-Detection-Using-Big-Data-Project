@@ -33,8 +33,11 @@ class SystemFlow:
             self.extractor = FeatureExtractor(**fe_config)
             self.extractor_trained = False
 
+
+
     def update(self, hyp):
         self.train = Train
+
 
 
     def return_hyperparameter(self):
@@ -60,15 +63,11 @@ class SystemFlow:
         return searchRes['hits']['hits'][0]["_source"]["threshold"]
 
 
-    def train_extractor(self, topic, iteration=100):
-
-        for i in range(iteration):
-            next_data = self.get_next(topic)
-            self.extractor.fit(next_data)
-        self.extractor_trained = True
 
     def create_stream(self, topic):
         self.streams[topic] = self.consumer.stream_data(topic)
+
+
 
 
     def get_next(self, topic):
@@ -86,11 +85,15 @@ class SystemFlow:
         return result, original_data
 
 
+
     def fit_next(self, topic):
         next_data, original_data = self.get_next(topic)
 
         self.train.fit(next_data)
         return next_data, original_data
+
+
+
 
     def predict_next(self, topic):
         next_data, original_data = self.get_next(topic)
@@ -99,10 +102,15 @@ class SystemFlow:
 
         return (next_data, original_data, *self.train.predict(next_data))
 
+
+
+
     def fit_predict_next(self, topic):
         next_data, original_data = self.get_next(topic)
         self.train.fit(next_data)
         return (next_data, original_data, *self.train.predict(next_data))
+
+
 
     def save_trained_models(self, path="saved_models"):
         models, ensemble_models = self.train.get_models()

@@ -13,11 +13,11 @@ class DataProducer(Producer):
                'client.id': socket.gethostname()}
 
         elif config is "cloud":
-            conf = {'bootstrap.servers': "pkc-4r297.europe-west1.gcp.confluent.cloud:9092",
+            conf = {'bootstrap.servers': "pkc-lzvrd.us-west4.gcp.confluent.cloud:9092",
                     "security.protocol": "",
                     "sasl.mechanisms": "",
-                    "sasl.username": "54KW7VWPPTJIL74Y",
-                    "sasl.password": "UpsXcoDKhvgz5v5w47fuFwEpV9WidGUdLLt7YKzT69U/0jS6Pb321qKepzzSAdOF",
+                    "sasl.username": "PAMBITHEWTHX3PP4",
+                    "sasl.password": "G8QVRHA85d9yZRt7z2olWWij8MSfVhTxAbxr/pu43YJL6WXQwe0ml5q8JyaVj2w9",
                     "security.protocol": "SASL_SSL",
                     "sasl.mechanisms": "PLAIN",
                     "ssl.ca.location": certifi.where(),
