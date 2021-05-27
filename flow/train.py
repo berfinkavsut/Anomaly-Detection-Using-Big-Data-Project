@@ -1,10 +1,6 @@
-import numpy as np
 from pysad.transform.probability_calibration import ConformalProbabilityCalibrator
 from models import Loda, XStream, IForest, KnnCad
 from pysad.transform.ensemble.ensemblers import AverageScoreEnsembler
-import threading
-import multiprocessing
-import time
 import numpy as np
 
 
@@ -108,7 +104,6 @@ class Train:
 
                 i += 1
 
-            #todo: ensemblelari baska modele sokmak?
             ens_score = self.ensembler.fit_transform(scores)
             ens_pred[key] = self.ScoreConverter.fit_transform(ens_score)
 
@@ -136,30 +131,30 @@ class Train:
         return unique
 
 
-
-    def thread_fit(self, X_train):
-
-        s = time.time()
-        unique = self.get_unique_models()
-        print(time.time() - s)
-        threads = []
-
-        for key, model in unique.items():
-            threads.append(multiprocessing.Process(target=model.fit, args=(X_train, )))
-
-        s = time.time()
-        for t in threads:
-            t.start()
-        print(time.time() - s)
-        s = time.time()
-        for t in threads:
-            t.join()
-        print(time.time() - s)
-
-
-
-
-
-
-
-
+    #
+    # def thread_fit(self, X_train):
+    #
+    #     s = time.time()
+    #     unique = self.get_unique_models()
+    #     print(time.time() - s)
+    #     threads = []
+    #
+    #     for key, model in unique.items():
+    #         threads.append(multiprocessing.Process(target=model.fit, args=(X_train, )))
+    #
+    #     s = time.time()
+    #     for t in threads:
+    #         t.start()
+    #     print(time.time() - s)
+    #     s = time.time()
+    #     for t in threads:
+    #         t.join()
+    #     print(time.time() - s)
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
