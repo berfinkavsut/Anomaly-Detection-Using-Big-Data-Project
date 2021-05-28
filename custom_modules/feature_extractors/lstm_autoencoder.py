@@ -148,7 +148,6 @@ param = {'latent_dim': 10,
          'loss': 'mse',
          }
 
-
 lstm_autoencoder = LSTMAutoencoder(param=param, selected_features=selected_features)
 lstm_autoencoder.fit(X)
 extracted_features = lstm_autoencoder.transform(X)
@@ -158,7 +157,7 @@ model = lstm_autoencoder.get_model()
 X_test = data[selected_features]
 X_test1 = X_test.to_numpy()
 X_test = X_test1.reshape(1, param['time_step'], 3)
-#X = pd.DataFrame(X)
+# X = pd.DataFrame(X)
 X_hat = model.predict(X_test)
 
 print(X_test)

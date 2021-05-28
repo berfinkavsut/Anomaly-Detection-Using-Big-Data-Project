@@ -8,8 +8,7 @@ import pandas as pd
     checksum_status possible values
     urgent_pointer
     ip_flag
-    ipv6 max too large
-    
+    ipv6 max too large    
 """
 
 
@@ -30,7 +29,7 @@ def network_data_transformer(df):
     max_ipv6 = 2 ** 128 - 1
     max_seq_raw = 2 ** 32 - 1
     max_ack_raw = 2 ** 32 - 1
-    max_checksum = 2 ** 16 -1
+    max_checksum = 2 ** 16 - 1
     max_win_size = 65535
     max_packet_length = 65535
     max_proto_no = 255
