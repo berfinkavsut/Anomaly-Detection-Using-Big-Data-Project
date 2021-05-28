@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-## Prep AfterImage cython package
+# Prep AfterImage cython package
 import os
 import subprocess
 import pyximport; pyximport.install()
@@ -31,7 +31,7 @@ class KitsuneFeatureExtractor:
         self.SessionLimit = HostSimplexLimit * self.HostLimit * self.HostLimit  # *2 since each dual creates 2 entries in memory
         self.MAC_HostLimit = self.HostLimit * 10
 
-        ### Prep Feature extractor (AfterImage) ###
+        # Prep Feature extractor (AfterImage) #
 
         # HTs
         self.HT_jit = af.incStatDB(limit=self.HostLimit * self.HostLimit)  # H-H Jitter Stats
@@ -119,7 +119,7 @@ class KitsuneFeatureExtractor:
 
             self.curPacketIndx = self.curPacketIndx + 1
 
-        ### Extract Features ###
+        # Extract Features #
         try:
             return self.updateGetStats(IPtype, srcMAC, dstMAC, srcIP, srcproto, dstIP, dstproto, framelen, timestamp)
         except Exception as e:
@@ -130,7 +130,8 @@ class KitsuneFeatureExtractor:
         return len(self.getNetStatHeaders())
 
     def findDirection(self, IPtype, srcIP, dstIP, eth_src, eth_dst):
-        # cpp: this is all given to you in the direction string of the instance (NO NEED FOR THIS FUNCTION)
+        # cpp: this is all given to you in the direction string of the instance
+        # (NO NEED FOR THIS FUNCTION)
 
         if IPtype == 0:  # is IPv4
             lstP = srcIP.rfind('.')
