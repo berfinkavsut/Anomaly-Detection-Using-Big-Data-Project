@@ -38,4 +38,9 @@ model = trainer_model.model
 
 th.save(model.state_dict(), 'ip2vec.pth')
 model_load = th.load("ip2vec.pth")
-print(model_load)
+print(model.u_embedding.weight.shape)
+print(type(model.u_embedding.weight))
+print(len(corpus))
+
+print('Most similar of 192.168.2.122:')
+trainer_model.most_similar('192.168.2.122', 5)
