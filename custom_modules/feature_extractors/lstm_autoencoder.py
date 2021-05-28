@@ -111,7 +111,7 @@ class LSTMAutoencoder(BaseFeatureExtractor):
     def get_model(self):
         return self.model
 
-
+"""
 import pandas as pd
 import numpy as np
 import os
@@ -169,4 +169,4 @@ X_hat = X_hat.reshape(param['time_step'], 3)
 
 score = mean_squared_error(X_test, X_hat)
 print('MSE:', score)
-
+"""
