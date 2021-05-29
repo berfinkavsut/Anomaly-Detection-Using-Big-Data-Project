@@ -1,6 +1,7 @@
 import pandas as pd
 import torch as th
 import numpy as np
+import os
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 
@@ -12,7 +13,7 @@ class Ip2VecExtractor(BaseFeatureExtractor):
 
     feature_extractor_name = 'ip2vec_extractor'
 
-    def __init__(self, param, selected_features, dataset):
+    def __init__(self, param, selected_features):
         """
         :param param: dictionary for model parameters
         :param selected_features: selected features to extract features
@@ -28,18 +29,31 @@ class Ip2VecExtractor(BaseFeatureExtractor):
 
         # take categorical features
         self.features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
-        X = dataset[self.features]
+
+        self.w2v = []
+        self.v2w = []
+        self.corpus = []
+        self.freq = []
+        self.d = []
+
+        self.trainer_model = []
+        self.train = []
+
+    def fit(self, X):
+
+        X = X[self.features]
         self.d = X.to_numpy()
 
         self.w2v, self.v2w = p._w2v(self.d)
         self.corpus = pd.DataFrame(p._corpus(self.d, self.w2v)).to_numpy()
         self.freq = p._frequency(self.d)
-        self.batch_size = 1#?
-        self.train = p._data_loader(self.corpus, self.batch_size)
-        self.trainer_model = t.Trainer(self.w2v, self.v2w, self.freq, emb_dim=32, device=th.device('cpu'))
 
-    def fit(self, X):
-        self.trainer_model.fit(data=self.train, max_epoch=5, batch_size=256, neg_num=10)
+        self.train = p._data_loader(self.corpus)
+        self.trainer_model = t.Trainer(self.w2v, self.v2w, self.freq, emb_dim=self.emb_dim, device=th.device('cpu'))
+        self.trainer_model.fit(data=self.train,
+                               max_epoch=self.max_epoch,
+                               batch_size=self.batch_size,
+                               neg_num=self.neg_num)
 
     def transform(self, X):
         """
@@ -49,28 +63,15 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         model = self.trainer_model.model
         embeddings = model.u_embedding.weight.detach().numpy()
 
-        # print('Most similar of 192.168.2.122:')
-        # trainer_model.most_similar('192.168.2.122', 5)
-
-        features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
-
-        ip_addresses = X['source_ip']
-        ix = self.w2v[ip_addresses]
-        ip_vector = embeddings[ix]
-        print(ip_vector.shape)
+        source_ips = X['source_ip']
+        source_ips = source_ips.to_numpy()
         ip_vectors = []
-
-        for i in range(d.shape[0]):
-            pkt = d[i]
-            ip_address = pkt[0]
-            ix = w2v[ip_address]
-            ip_vector = EMBEDDINGS[ix]
+        for ip in source_ips:
+            ix = self.w2v[ip]
+            ip_vector = embeddings[ix]
             ip_vectors.append(ip_vector)
 
-        print(ip_vectors)
-
-
-        self.features_extracted = X[self.selected_features]
+        self.features_extracted = ip_vectors
         return self.features_extracted
 
     def fit_transform(self, X):
@@ -79,6 +80,32 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         :return: data frame output, subset of input
         """
 
-        self.fit(X)
+        self.fit()
         self.features_extracted = self.transform(X)
         return self.features_extracted
+
+
+"""
+os.chdir('..')
+os.chdir('..')
+
+main_dir = os.getcwd()
+data_dir = os.path.join(main_dir, "data")
+file_dir = os.path.join(data_dir, "Kitsune_45000_not_transformer.csv")
+X = pd.read_csv(file_dir)
+X = X.iloc[0:100, :]
+
+selected_features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
+X.dropna(subset=selected_features, inplace=True)
+
+param = {'emb_dim': 32, 'max_epoch': 50, 'batch_size': 128, 'neg_num': 10}
+
+ip2vec_extractor = Ip2VecExtractor(selected_features=selected_features, param=param)
+
+ip2vec_extractor.fit(X)
+features_extracted = ip2vec_extractor.transform(X)
+
+# print(ip2vec_extractor.w2v)
+# print(ip2vec_extractor.v2w)
+print(features_extracted)
+"""

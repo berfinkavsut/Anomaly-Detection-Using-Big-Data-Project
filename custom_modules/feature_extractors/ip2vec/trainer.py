@@ -42,24 +42,28 @@ class Trainer:
             
             for batch in tqdm(data):
                 batch = np.array(batch)
-                # print('batch', batch)
+                # print('batch:', batch)
                 # print(batch.shape)
+
                 context, target = batch[:, 1], batch[:, 0]
+
                 # print('context:', context)
+                # print('target:', target)
+
                 self.optim.zero_grad()
                 batch_size = 5  # changed
                 batch_neg = self.negative_sampling(batch_size, neg_num, target)
                 context = V(th.LongTensor(context)).to(self.device)
                 target = V(th.LongTensor(target)).to(self.device)
                 batch_neg = V(th.LongTensor(batch_neg.astype(int))).to(self.device)
-                
+                # print('batch neg:',batch_neg )
                 loss = self.model(target, context, batch_neg)
                 # loss = self.model(target, context) #changed
                 loss.backward()
                 self.optim.step()
-#                run_loss += loss.cpu().item()
+#               run_loss += loss.cpu().item()
 #           run_losses.append(run_loss/len(data))
-            print(epoch, run_loss)
+            # print(epoch, run_loss)
         return run_losses
 
     def most_similar(self, word, top):

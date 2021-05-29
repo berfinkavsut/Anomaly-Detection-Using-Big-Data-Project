@@ -1,3 +1,5 @@
+# numpy==1.19.2
+
 import pandas as pd
 
 from tensorflow.keras.models import Model
@@ -36,14 +38,14 @@ class LSTMAutoencoder(BaseFeatureExtractor):
 
         # encoder part
         self.input = Input(shape=(self.time_step, self.n_features), name='input')
-        self.encoder_layer = LSTM(self.latent_dim,
+        self.encoder_layer = LSTM(units=self.latent_dim,
                                   activation='relu',
                                   name='encoder_layer')(self.input)
 
         # decoder part
         self.repeat_layer = RepeatVector(self.time_step,
                                          name='repeat_vector')(self.encoder_layer)  # bridge between encoder and decoder
-        self.decoder_layer = LSTM(self.latent_dim,
+        self.decoder_layer = LSTM(units=self.latent_dim,
                                   activation='relu',
                                   return_sequences=True,
                                   name='lstm')(self.repeat_layer)
@@ -71,7 +73,7 @@ class LSTMAutoencoder(BaseFeatureExtractor):
         X = X.to_numpy()
 
         # reshape inputs for LSTM [samples, time_steps, features]
-        # X = X.reshape(X.shape[0], 1, X.shape[1])
+        X = X.reshape(X.shape[0], 1, X.shape[1])
 
         history = self.model.fit(x=X,
                                  y=X,
@@ -137,13 +139,13 @@ features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
             'num_access_files', 'num_outbound_cmds', 'is_host_login',
             ]
 data.columns = features
-data = data[0:32]
+# data = data[0:32]
 X = data
 selected_features = features
 
 param = {'latent_dim': 10,
          'time_step': 1,  # will be fixed
-         'epoch_no': 100,
+         'epoch_no': 5,
          'optimizer': 'adam',
          'loss': 'mse',
          }
@@ -156,17 +158,14 @@ extracted_features2 = lstm_autoencoder.transform(X)
 model = lstm_autoencoder.get_model()
 X_test = data[selected_features]
 X_test1 = X_test.to_numpy()
-X_test = X_test1.reshape(1, param['time_step'], 3)
+X_test = X_test1.reshape(X_test1.shape[0], 1, X_test1.shape[1])
 # X = pd.DataFrame(X)
 X_hat = model.predict(X_test)
 
-print(X_test)
-print(X_hat)
+print(X_test.shape)
+print(X_hat.shape)
 print('checkpoint')
-
-X_test = X_test.reshape(param['time_step'], 3)
-X_hat = X_hat.reshape(param['time_step'], 3)
-
-score = mean_squared_error(X_test, X_hat)
+X_hat = X_hat.reshape(X_hat.shape[0], -1)
+score = mean_squared_error(X_test1, X_hat)
 print('MSE:', score)
 """

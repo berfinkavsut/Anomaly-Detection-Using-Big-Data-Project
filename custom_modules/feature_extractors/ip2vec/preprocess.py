@@ -27,7 +27,7 @@ def _frequency(data):
     return freq
 
 
-def _data_loader(corpus, batch_size):
+def _data_loader(corpus):
 
     def func(x):
         return [[x[0], x[1]],
