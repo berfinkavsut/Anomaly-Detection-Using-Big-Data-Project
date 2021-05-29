@@ -1,3 +1,4 @@
+"""
 import torch as th
 from torch.autograd import Variable as V
 from torch import nn, optim
@@ -30,3 +31,4 @@ class Skipgram(nn.Module):
         
         loss = positive + negative
         return -loss.mean()
+"""
