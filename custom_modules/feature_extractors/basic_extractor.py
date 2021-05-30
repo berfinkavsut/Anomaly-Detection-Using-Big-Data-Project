@@ -26,7 +26,8 @@ class BasicExtractor(BaseFeatureExtractor):
         :return: data frame output, subset of input
         """
 
-        self.features_extracted = X[self.selected_features]
+        features_extracted = X[self.selected_features]
+        self.features_extracted = features_extracted.to_numpy()
         return self.features_extracted
 
     def fit_transform(self, X):

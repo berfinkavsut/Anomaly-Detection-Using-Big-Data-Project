@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 
+
 class ClusterExtractor(BaseFeatureExtractor):
     """
     IMPORTANT NOTES
@@ -52,8 +53,7 @@ class ClusterExtractor(BaseFeatureExtractor):
         pred_cluster_ids = self.model.predict(X)
 
         # retrieve predicted cluster ids
-        self.features_extracted = pd.DataFrame(pred_cluster_ids)
-        self.features_extracted.columns = ['cluster_ids']
+        self.features_extracted = np.array(pred_cluster_ids)
 
         """"
         if 0:

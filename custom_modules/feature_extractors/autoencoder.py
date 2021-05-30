@@ -84,8 +84,7 @@ class Autoencoder(BaseFeatureExtractor):
 
         X = X[self.selected_features]
         X = X.to_numpy()
-        features_extracted = self.encoder.predict(X)
-        self.features_extracted = pd.DataFrame(features_extracted)
+        self.features_extracted = self.encoder.predict(X)
         return self.features_extracted
 
     def fit_transform(self, X):

@@ -4,7 +4,6 @@ import numpy as np
 import os
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
-
 from custom_modules.feature_extractors.ip2vec import preprocess as p
 from custom_modules.feature_extractors.ip2vec import trainer as t
 
@@ -63,45 +62,26 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         model = self.trainer_model.model
         embeddings = model.u_embedding.weight.detach().numpy()
 
-        src_ips = X['source_ip'].to_numpy()
-        dst_ips = X['destination_ip'].to_numpy()
-        dst_ports = X['dst_port'].to_numpy()
-        protocols = X['protocol_name'].to_numpy()
+        X = X[self.features].to_numpy()
+        feature_vectors = []
 
-        src_ip_vectors = []
-        dst_ip_vectors = []
-        dst_port_vectors = []
-        protocol_vectors = []
+        for i in range(X.shape[0]):
 
-        for i in range(len(X)):
+            pkt = X[i]
+            feature_vector = np.array([])
+            for j in range(X.shape[1]):
+                feature = pkt[j]
+                ix = self.w2v[feature]
+                new_vector = embeddings[ix]
+                # print(new_vector)
+                feature_vector = np.concatenate((feature_vector, new_vector), axis=0)
+                # print(feature_vector)
+            feature_vectors.append(feature_vector)
+        # print(feature_vectors)
 
-            src_ip = src_ips[i]
-            ix = self.w2v[src_ip]
-            src_ip_vector = embeddings[ix]
-            src_ip_vectors.append(src_ip_vector)
+        self.features_extracted = feature_vectors
 
-            dst_ip = dst_ips[i]
-            ix = self.w2v[dst_ip]
-            dst_ip_vector = embeddings[ix]
-            dst_ip_vectors.append(dst_ip_vector)
-
-            dst_port = dst_ports[i]
-            ix = self.w2v[dst_port]
-            dst_port_vector = embeddings[ix]
-            dst_port_vectors.append(dst_port_vector)
-
-            protocol = protocols[i]
-            ix = self.w2v[protocol]
-            protocol_vector = embeddings[ix]
-            protocol_vectors.append(protocol_vector)
-
-        print(src_ip_vectors)
-        print(dst_ip_vectors)
-        print(dst_port_vectors)
-        print(protocol_vectors)
-        # self.features_extracted = ip_vectors
-
-        return []
+        return self.features_extracted
 
     def fit_transform(self, X):
         """
@@ -113,27 +93,4 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         self.features_extracted = self.transform(X)
         return self.features_extracted
 
-
-os.chdir('..')
-os.chdir('..')
-
-main_dir = os.getcwd()
-data_dir = os.path.join(main_dir, "data")
-file_dir = os.path.join(data_dir, "Kitsune_45000_not_transformer.csv")
-X = pd.read_csv(file_dir)
-X = X.iloc[0:100, :]
-
-selected_features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
-X.dropna(subset=selected_features, inplace=True)
-
-param = {'emb_dim': 32, 'max_epoch': 50, 'batch_size': 128, 'neg_num': 10}
-
-ip2vec_extractor = Ip2VecExtractor(selected_features=selected_features, param=param)
-
-ip2vec_extractor.fit(X)
-features_extracted = ip2vec_extractor.transform(X)
-
-# print(ip2vec_extractor.w2v)
-# print(ip2vec_extractor.v2w)
-print(features_extracted)
 

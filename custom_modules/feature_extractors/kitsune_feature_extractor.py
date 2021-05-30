@@ -36,7 +36,6 @@ class KitsuneFeatureExtractor(BaseFeatureExtractor):
         # HostLimit = 100000000000
         # HostSimplexLimit = 100000000000
 
-
         # Lambdas
         if np.isnan(param['Lambdas']):
             self.Lambdas = [5, 3, 1, .1, .01]
@@ -69,20 +68,19 @@ class KitsuneFeatureExtractor(BaseFeatureExtractor):
         pass
 
     def transform(self, X):
-        pkt = X
-        features_extracted = self.get_next_vector(pkt)
-        return features_extracted
+        features_extracted = self.get_next_vector(X)
+        self.features_extracted = np.array(features_extracted)
+        return self.features_extracted
 
     def fit_transform(self, X):
         self.fit(X)
-        features_extracted = self.transform(X)
-        return features_extracted
+        self.features_extracted = self.transform(X)
+        return self.features_extracted
 
     def get_next_vector(self, pkt):
         if pkt is None:
             return []
         else:
-
             IPtype = np.nan
             timestamp = 0
             framelen = 0
@@ -229,47 +227,3 @@ class KitsuneFeatureExtractor(BaseFeatureExtractor):
             HHjitstat_headers += ["HH_jit_"+h for h in self.HT_jit.getHeaders_1D(Lambda=self.Lambdas[i],ID=None)]
             HpHpstat_headers += ["HpHp_" + h for h in self.HT_Hp.getHeaders_1D2D(Lambda=self.Lambdas[i], IDs=None, ver=2)]
         return MIstat_headers + Hstat_headers + HHstat_headers + HHjitstat_headers + HpHpstat_headers
-
-
-os.chdir('..')
-os.chdir('..')
-
-main_dir = os.getcwd()
-data_dir = os.path.join(main_dir, "data")
-path = os.path.join(data_dir, "Kitsune_45000_not_transformer.csv")
-
-data = pd.read_csv(path)
-columns = data.columns
-data = pd.DataFrame.to_numpy(data)
-data = np.nan_to_num(data)
-data = pd.DataFrame(data)
-data.columns = columns
-
-# packet_limit = np.Inf  # the number of packets to process
-packet_limit = len(data)
-
-param = {'limit': packet_limit,
-         'Lambdas': np.nan,
-         'HostLimit': 100000000000,
-         'HostSimplexLimit': 100000000000}
-
-# param = {'limit': np.inf,
-#          'Lambdas': np.nan,
-#          'HostLimit': 100000000000,
-#          'HostSimplexLimit': 100000000000}
-
-selected_features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
-                     'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot',
-                     'num_failed_logins', 'logged_in', 'num_compromised', 'root_shell',
-                     'su_attempted', 'num_root', 'num_file_creations', 'num_shells',
-                     'num_access_files', 'num_outbound_cmds', 'is_host_login',
-                     ]
-
-kitsune_fe = KitsuneFeatureExtractor(param=param, selected_features=selected_features)
-kitsune_fe.fit()
-
-for i in range(10):
-    pkt = data.iloc[i]
-    # print(pkt)
-    features_extracted = kitsune_fe.transform(pkt)
-    print(features_extracted)
