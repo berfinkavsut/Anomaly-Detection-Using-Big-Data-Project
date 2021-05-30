@@ -79,7 +79,7 @@ class Ip2VecExtractor(BaseFeatureExtractor):
             feature_vectors.append(feature_vector)
         # print(feature_vectors)
 
-        self.features_extracted = feature_vectors
+        self.features_extracted = np.array(feature_vectors)
 
         return self.features_extracted
 
@@ -92,24 +92,3 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         self.fit()
         self.features_extracted = self.transform(X)
         return self.features_extracted
-
-
-os.chdir('..')
-os.chdir('..')
-
-main_dir = os.getcwd()
-data_dir = os.path.join(main_dir, "data")
-file_dir = os.path.join(data_dir, "Kitsune_45000_not_transformer.csv")
-X = pd.read_csv(file_dir)
-
-selected_features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
-X.dropna(subset=selected_features, inplace=True)
-
-param = {'emb_dim': 10, 'max_epoch': 50, 'batch_size': 128, 'neg_num': 10}
-
-ip2vec_extractor = Ip2VecExtractor(param=param, selected_features=selected_features)
-
-ip2vec_extractor.fit(X)
-features_extracted = ip2vec_extractor.transform(X)
-print('done')
-features_extracted.to_csv("ip2vec_4_feature.csv")
