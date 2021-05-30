@@ -98,6 +98,7 @@ class LSTMAutoencoder(BaseFeatureExtractor):
 
         features_extracted = self.lstm_autoencoder.predict(X)
         features_extracted = pd.DataFrame(features_extracted)
+
         return features_extracted
 
     def fit_transform(self, X):

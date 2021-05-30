@@ -8,6 +8,9 @@ import pyximport; pyximport.install()
 import custom_modules.feature_extractors.kitsune_after_image as af
 # import AfterImage_NDSS as af
 
+from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
+
+
 use_extrapolation = False  # experimental correlation code
 if use_extrapolation:
     print("Importing AfterImage Cython Library")
@@ -16,23 +19,44 @@ if use_extrapolation:
         subprocess.call(cmd, shell=True)
 
 
-class KitsuneFeatureExtractor:
-    def __init__(self, limit=np.inf, Lambdas=np.nan, HostLimit=100000000000,HostSimplexLimit=100000000000):
-        self.limit = limit
+class KitsuneFeatureExtractor(BaseFeatureExtractor):
+
+    feature_extractor_name = 'kitsune_feature_extractor'
+
+    def __init__(self, param, selected_features):
+        """
+        :param param: dictionary for model parameters
+        :param selected_features: selected features to extract features
+        """
+
+        super().__init__(param=param, selected_features=selected_features)
+
+        # limit = np.inf
+        # Lambdas = np.nan
+        # HostLimit = 100000000000
+        # HostSimplexLimit = 100000000000
+
 
         # Lambdas
-        if np.isnan(Lambdas):
+        if np.isnan(param['Lambdas']):
             self.Lambdas = [5, 3, 1, .1, .01]
         else:
-            self.Lambdas = Lambdas
+            self.Lambdas = param['Lambdas']
 
         # HT Limits
-        self.HostLimit = HostLimit
-        self.SessionLimit = HostSimplexLimit * self.HostLimit * self.HostLimit  # *2 since each dual creates 2 entries in memory
+        self.limit = param['limit']
+        self.HostLimit = param['HostLimit']
+        self.HostSimplexLimit = param['HostSimplexLimit']
+        self.SessionLimit = self.HostSimplexLimit * self.HostLimit * self.HostLimit  # *2 since each dual creates 2 entries in memory
         self.MAC_HostLimit = self.HostLimit * 10
 
-        # Prep Feature extractor (AfterImage) #
+        # HTs
+        # self.HT_jit = []
+        # self.HT_MI = []
+        # self.HT_H = []
+        # self.HT_Hp = []
 
+        # Prep Feature extractor (AfterImage) #
         # HTs
         self.HT_jit = af.incStatDB(limit=self.HostLimit * self.HostLimit)  # H-H Jitter Stats
         self.HT_MI = af.incStatDB(limit=self.MAC_HostLimit)  # MAC-IP relationships
@@ -41,8 +65,20 @@ class KitsuneFeatureExtractor:
 
         self.curPacketIndx = 0
 
-    def get_next_vector(self, pkt):
+    def fit(self, X=None):
+        pass
 
+    def transform(self, X):
+        pkt = X
+        features_extracted = self.get_next_vector(pkt)
+        return features_extracted
+
+    def fit_transform(self, X):
+        self.fit(X)
+        features_extracted = self.transform(X)
+        return features_extracted
+
+    def get_next_vector(self, pkt):
         if pkt is None:
             return []
         else:
@@ -194,27 +230,46 @@ class KitsuneFeatureExtractor:
             HpHpstat_headers += ["HpHp_" + h for h in self.HT_Hp.getHeaders_1D2D(Lambda=self.Lambdas[i], IDs=None, ver=2)]
         return MIstat_headers + Hstat_headers + HHstat_headers + HHjitstat_headers + HpHpstat_headers
 
-"""
+
 os.chdir('..')
 os.chdir('..')
 
 main_dir = os.getcwd()
 data_dir = os.path.join(main_dir, "data")
 path = os.path.join(data_dir, "Kitsune_45000_not_transformer.csv")
-# pcap file in csv format
 
-df = pd.read_csv(path)
-normal_df = df.iloc[0:4500, :]
-attack_df = df.iloc[4500:5000, :]
+data = pd.read_csv(path)
+columns = data.columns
+data = pd.DataFrame.to_numpy(data)
+data = np.nan_to_num(data)
+data = pd.DataFrame(data)
+data.columns = columns
 
-# packet_limit = np.Inf #the number of packets to process
-packet_limit = len(df)
+# packet_limit = np.Inf  # the number of packets to process
+packet_limit = len(data)
 
-FE = KitsuneFeatureExtractor(packet_limit)
+param = {'limit': packet_limit,
+         'Lambdas': np.nan,
+         'HostLimit': 100000000000,
+         'HostSimplexLimit': 100000000000}
 
-for i in range(5):
-    print(i+1)
-    pkt = normal_df.iloc[i]
-    x = FE.get_next_vector(pkt)
-    print(x)
-"""
+# param = {'limit': np.inf,
+#          'Lambdas': np.nan,
+#          'HostLimit': 100000000000,
+#          'HostSimplexLimit': 100000000000}
+
+selected_features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
+                     'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot',
+                     'num_failed_logins', 'logged_in', 'num_compromised', 'root_shell',
+                     'su_attempted', 'num_root', 'num_file_creations', 'num_shells',
+                     'num_access_files', 'num_outbound_cmds', 'is_host_login',
+                     ]
+
+kitsune_fe = KitsuneFeatureExtractor(param=param, selected_features=selected_features)
+kitsune_fe.fit()
+
+for i in range(10):
+    pkt = data.iloc[i]
+    # print(pkt)
+    features_extracted = kitsune_fe.transform(pkt)
+    print(features_extracted)

@@ -72,3 +72,4 @@ class PCAExtractor(BaseFeatureExtractor):
         :return: PCA model
         """
         return self.model
+

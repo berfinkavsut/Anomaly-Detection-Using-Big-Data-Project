@@ -25,6 +25,7 @@ col_names = ["time", "duration", "source_ip", "destination_ip", "protocol", "pac
             "flags_reset", "flags_syn", "flags_fin", "win_size", "checksum", "checksum_status",
             "urgent_pointer", "proto_type", "proto_size", "hw_type", "hw_size", "hw_opcode", "src_hw_mac",
             "dst_hw_mac"]
+
 selected_features = {'autoencoder': col_names}
 
 selected_feature_extractors = ['autoencoder']

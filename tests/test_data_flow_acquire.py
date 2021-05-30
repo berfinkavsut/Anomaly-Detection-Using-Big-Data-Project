@@ -27,9 +27,8 @@ col_names = [
         "urgent_pointer", "proto_type", "proto_size", "hw_type", "hw_size", "hw_opcode", "src_hw_mac",
         "dst_hw_mac"
     ]
-selected_features = {'autoencoder': col_names
-                     }
 
+selected_features = {'autoencoder': col_names}
 selected_feature_extractors = ['autoencoder']
 
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}

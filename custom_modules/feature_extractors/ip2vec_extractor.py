@@ -85,7 +85,7 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         return self.features_extracted
 
 
-"""
+
 os.chdir('..')
 os.chdir('..')
 
@@ -108,4 +108,4 @@ features_extracted = ip2vec_extractor.transform(X)
 # print(ip2vec_extractor.w2v)
 # print(ip2vec_extractor.v2w)
 print(features_extracted)
-"""
+

@@ -6,7 +6,6 @@ from sklearn.cluster import KMeans
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 
-
 class ClusterExtractor(BaseFeatureExtractor):
     """
     IMPORTANT NOTES

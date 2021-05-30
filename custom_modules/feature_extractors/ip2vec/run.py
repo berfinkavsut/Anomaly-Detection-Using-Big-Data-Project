@@ -1,4 +1,4 @@
-import numpy as np
+"""import numpy as np
 import pandas as pd
 
 from custom_modules.feature_extractors.ip2vec import preprocess as p
@@ -67,5 +67,5 @@ for i in range(d.shape[0]):
     ip_vectors.append(ip_vector)
 
 # print(ip_vectors)
-
+"""
 

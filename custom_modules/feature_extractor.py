@@ -3,14 +3,13 @@ from custom_modules.feature_extractors.basic_extractor import BasicExtractor
 from custom_modules.feature_extractors.cluster_extractor import ClusterExtractor
 from custom_modules.feature_extractors.lstm_autoencoder import LSTMAutoencoder
 from custom_modules.feature_extractors.pca_extractor import PCAExtractor
-from custom_modules.feature_extractors.tsfresh_extractor import TsFreshExtractor
-from custom_modules.feature_extractors.word_embedding import WordEmbedding
+from custom_modules.feature_extractors.ip2vec_extractor import Ip2VecExtractor
+from custom_modules.feature_extractors.kitsune_feature_extractor import KitsuneFeatureExtractor
 
 
 class FeatureExtractor:
     def __init__(self, selected_feature_extractors, selected_features, param):
         """
-
         :param selected_features: selected features to apply feature extractors for each extractor
         :param param: parameters for models given as a dictionary of dictionaries
         :param sample_no: fixed sample number coming as batches
@@ -20,10 +19,10 @@ class FeatureExtractor:
         self.feature_extractors_map = {'autoencoder': Autoencoder,
                                        'basic_extractor': BasicExtractor,
                                        'cluster_extractor': ClusterExtractor,
+                                       # 'ip2vec_extractor': Ip2VecExtractor,  #not compatible with online learning
+                                       'kitsune_feature_extractor': KitsuneFeatureExtractor,
                                        'lstm_autoencoder': LSTMAutoencoder,
                                        'pca_extractor': PCAExtractor,
-                                       'tsfresh_extractor': TsFreshExtractor,
-                                       'word_embedding': WordEmbedding,
                                        }
 
         self.selected_feature_extractors = selected_feature_extractors
@@ -32,12 +31,10 @@ class FeatureExtractor:
 
         self.feature_extractors = self.create_extractors()
 
-        #self.sample_no = sample_no  # seems that it is not used now ?
         self.features_extracted = {}
 
     def create_extractors(self):
         """
-
         :return:
         """
 
@@ -51,7 +48,6 @@ class FeatureExtractor:
 
     def fit(self, X):
         """
-
         :param X:
         :return:
         """
@@ -61,12 +57,10 @@ class FeatureExtractor:
 
     def transform(self, X):
         """
-
         :param X:
         :return:
         """
 
-        # self.features_extracted = {}  # inefficient?
         for key in self.feature_extractors.keys():
             features_extracted = self.feature_extractors[key].transform(X)
             self.features_extracted[key] = features_extracted
