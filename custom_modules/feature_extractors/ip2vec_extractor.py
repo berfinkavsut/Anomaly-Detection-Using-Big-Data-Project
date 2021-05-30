@@ -63,16 +63,45 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         model = self.trainer_model.model
         embeddings = model.u_embedding.weight.detach().numpy()
 
-        source_ips = X['source_ip']
-        source_ips = source_ips.to_numpy()
-        ip_vectors = []
-        for ip in source_ips:
-            ix = self.w2v[ip]
-            ip_vector = embeddings[ix]
-            ip_vectors.append(ip_vector)
+        src_ips = X['source_ip'].to_numpy()
+        dst_ips = X['destination_ip'].to_numpy()
+        dst_ports = X['dst_port'].to_numpy()
+        protocols = X['protocol_name'].to_numpy()
 
-        self.features_extracted = ip_vectors
-        return self.features_extracted
+        src_ip_vectors = []
+        dst_ip_vectors = []
+        dst_port_vectors = []
+        protocol_vectors = []
+
+        for i in range(len(X)):
+
+            src_ip = src_ips[i]
+            ix = self.w2v[src_ip]
+            src_ip_vector = embeddings[ix]
+            src_ip_vectors.append(src_ip_vector)
+
+            dst_ip = dst_ips[i]
+            ix = self.w2v[dst_ip]
+            dst_ip_vector = embeddings[ix]
+            dst_ip_vectors.append(dst_ip_vector)
+
+            dst_port = dst_ports[i]
+            ix = self.w2v[dst_port]
+            dst_port_vector = embeddings[ix]
+            dst_port_vectors.append(dst_port_vector)
+
+            protocol = protocols[i]
+            ix = self.w2v[protocol]
+            protocol_vector = embeddings[ix]
+            protocol_vectors.append(protocol_vector)
+
+        print(src_ip_vectors)
+        print(dst_ip_vectors)
+        print(dst_port_vectors)
+        print(protocol_vectors)
+        # self.features_extracted = ip_vectors
+
+        return []
 
     def fit_transform(self, X):
         """
@@ -83,7 +112,6 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         self.fit()
         self.features_extracted = self.transform(X)
         return self.features_extracted
-
 
 
 os.chdir('..')
