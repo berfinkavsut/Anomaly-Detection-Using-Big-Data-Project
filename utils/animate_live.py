@@ -8,7 +8,7 @@ class AnimateLive:
 
         self.time_limits = time_limits
         plt.ion()
-
+        self.ax_num = ax_num
         w = int(round(ax_num/2))
         h = int(round(ax_num/w))
 
@@ -25,17 +25,17 @@ class AnimateLive:
         self.fig.canvas.draw()
 
         if x_labels is not None:
-            for i in range(len(self.ax)):
+            for i in range(self.ax_num):
                 self.ax[i].set_xlabel(x_labels[i])
 
 
 
         if y_labels is not None:
-            for i in range(len(self.ax)):
+            for i in range(self.ax_num):
                 self.ax[i].set_ylabel(y_labels[i])
                 self.ax[i].set_ylim([-0.2, 1.2])
 
-        self.values = [[0] for i in range(len(self.ax))]
+        self.values = [[0] for i in range(self.ax_num)]
         self.time = [-1]
 
 
