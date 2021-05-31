@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Train:
-    def __init__(self, model_properties, ensemble_model_properties=None, thread=False):
+    def __init__(self, model_properties, ensemble_model_properties=None):
         """
         :param num_features: Number of features.
         :param model_properties: Dictionary of dictionaries of model names and properties. Nested dictionaries contain
@@ -51,7 +51,6 @@ class Train:
 
         #todo
         self.inc = 0
-        self.thread = thread
 
         print(self.ensemble_models)
         self.ScoreConverter = ConformalProbabilityCalibrator()
@@ -62,14 +61,10 @@ class Train:
 
     def fit(self, X_train):
 
-
-        if self.thread:
-            return self.thread_fit(X_train)
-        else:
-            unique = self.get_unique_models()
-            for model in unique.values():
-                model.fit(X_train)
-            return
+        unique = self.get_unique_models()
+        for model in unique.values():
+            model.fit(X_train)
+        return
 
 
 
@@ -110,9 +105,10 @@ class Train:
 
         return pred, ens_pred
 
+
+
     def get_models(self):
         return self.models, self.ensemble_models
-
 
 
     def get_unique_models(self):
