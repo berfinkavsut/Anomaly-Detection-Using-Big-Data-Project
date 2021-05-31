@@ -2,8 +2,12 @@ import time
 from flow.system_flow import SystemFlow
 from utils.alert import Alert
 
-props = {'xStream': {}, 'IForest': {}}
-ens_props = {'Ensemble (xStream and IForest)': {'xStream': {}, 'IForest': {}}}
+props = {'xStream': {}, 'IForest': {}, 'RRCF': {}}
+
+ens_props = {'Ensemble (IForest and RRCF)': {'IForest': {}, 'RRCF': {}},
+             'Ensemble (RRCF and xStream)': {'RRCF': {}, 'xStream': {}},
+             'Ensemble (xStream and IForest)': {'xStream': {}, 'IForest': {}}
+             }
 
 data_dim = 10
 # param is dictionary of dictionaries
@@ -27,8 +31,8 @@ selected_feature_extractors = ['autoencoder']
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
 topic = "Device1"
-system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
-                 psw="changeme", elk_index="test_flow", verbose=True, with_elastic=False, with_dataset=False)
+system_flow = SystemFlow( props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
+                 psw="changeme", elk_index="test_flow", verbose=True, with_elastic=True, with_dataset=False)
 
 
 system_flow.create_stream(topic)

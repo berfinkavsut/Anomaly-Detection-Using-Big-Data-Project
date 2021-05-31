@@ -92,7 +92,8 @@ class SystemFlow:
 
             if self.fe:
 
-                result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
+                #result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
+                result = self.extractor.fit_transform(transformed)['autoencoder']
 
             else:
                 result = transformed
@@ -155,6 +156,7 @@ class SystemFlow:
         timestamp_df = pd.DataFrame.from_dict({"@timestamp": [timestamp]})
 
         #df = original_data.join(probs_df.join(ens_probs_df.join(timestamp_df)))
+        original_data = original_data.loc[:, original_data.columns != 'time']
         df = original_data.join(probs_df.join(ens_probs_df.join(thresholds_df.join(timestamp_df))))
 
         data = df.to_dict('records')

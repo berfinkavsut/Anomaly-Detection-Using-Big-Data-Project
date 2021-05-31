@@ -19,7 +19,7 @@ param = {
              'optimizer': 'adam',
              'loss': 'mse',}
          }
-col_names = ["time", "duration", "source_ip", "destination_ip", "protocol", "packet_len","dif_serv",
+col_names = [ "duration", "source_ip", "destination_ip", "protocol", "packet_len","dif_serv",
             "flag", "ip_vers", "src_port", "dst_port", "data_len", "seq", "seq_raw", "next_seq", "ack", "ack_raw",
             "flags_res", "flags_ns", "flags_cwr", "flags_ecn", "flags_urg", "flags_ack", "flags_push",
             "flags_reset", "flags_syn", "flags_fin", "win_size", "checksum", "checksum_status",
@@ -32,8 +32,8 @@ selected_feature_extractors = ['autoencoder']
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
 topic = "Device1"
-system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
-                 psw="changeme", elk_index="test_flow", verbose=True)
+system_flow = SystemFlow(props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
+                 psw="changeme", elk_index="test_flow", verbose=True, with_elastic=True, with_dataset=False)
 
 
 system_flow.create_stream(topic)
