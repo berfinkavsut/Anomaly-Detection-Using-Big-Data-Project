@@ -77,7 +77,8 @@ class SystemFlow:
 
         if self.fe:
 
-            result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
+            #result = self.extractor.fit_transform(transformed)['autoencoder'].to_numpy()
+            result = self.extractor.fit_transform(transformed)['autoencoder']
 
         else:
             result = transformed

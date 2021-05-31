@@ -1,5 +1,5 @@
 from pysad.transform.probability_calibration import ConformalProbabilityCalibrator
-from models import Loda, XStream, IForest, KnnCad
+from models import Loda, XStream, IForest, KnnCad, RRCF
 from pysad.transform.ensemble.ensemblers import AverageScoreEnsembler
 import numpy as np
 
@@ -24,7 +24,7 @@ class Train:
             'xStream': XStream,
             'IForest': IForest,
             'KnnCad': KnnCad,
-            # 'RRCF': RRCF,
+            'RRCF': RRCF,
             # 'KitNet': KitNet,
         }
         self.models = {}  # Dictionary of models

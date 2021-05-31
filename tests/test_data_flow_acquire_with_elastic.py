@@ -2,10 +2,10 @@ import time
 from flow.system_flow import SystemFlow
 from utils.alert import Alert
 
-props = {'xStream': {}, 'IForest': {}, 'Loda': {}}
+props = {'xStream': {}, 'IForest': {}, 'RRCF': {}}
 
-ens_props = {'Ensemble (IForest and Loda)': {'IForest': {}, 'Loda': {}},
-             'Ensemble (Loda and xStream)': {'Loda': {}, 'xStream': {}},
+ens_props = {'Ensemble (IForest and RRCF)': {'IForest': {}, 'RRCF': {}},
+             'Ensemble (RRCF and xStream)': {'RRCF': {}, 'xStream': {}},
              'Ensemble (xStream and IForest)': {'xStream': {}, 'IForest': {}}
              }
 
