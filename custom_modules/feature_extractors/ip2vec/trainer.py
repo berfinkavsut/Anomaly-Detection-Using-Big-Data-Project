@@ -51,7 +51,7 @@ class Trainer:
                 # print('target:', target)
 
                 self.optim.zero_grad()
-                batch_size = 5  # changed
+                batch_size = 1  # changed
                 batch_neg = self.negative_sampling(batch_size, neg_num, target)
                 context = V(th.LongTensor(context)).to(self.device)
                 target = V(th.LongTensor(target)).to(self.device)
