@@ -24,6 +24,7 @@ class Train:
             'xStream': XStream,
             'IForest': IForest,
             'KnnCad': KnnCad,
+            # 'RRCF': RRCF,
             # 'KitNet': KitNet,
         }
         self.models = {}  # Dictionary of models

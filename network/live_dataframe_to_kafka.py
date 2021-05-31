@@ -134,6 +134,6 @@ if __name__ == "__main__":
                     ]
 
         prev_time = float(packet.sniff_timestamp)
-        p.send_stream(topic="device2", value=df)
+        p.send_stream(topic="Device1", value=df)
         # print(packet)
 

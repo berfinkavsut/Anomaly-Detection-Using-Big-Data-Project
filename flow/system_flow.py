@@ -17,7 +17,7 @@ class SystemFlow:
     def __init__(self, num_features, props, ens_props=None, config="cloud", fe=False, fe_config=None, user="elastic",
                  psw="changeme", elk_index="test_flow", verbose=True):
 
-        self.train = Train(num_features=num_features, model_properties=props, ensemble_model_properties=ens_props)
+        self.train = Train(model_properties=props, ensemble_model_properties=ens_props)
 
         self.consumer = DataConsumer(config=config, verbose=verbose)
 

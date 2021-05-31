@@ -2,7 +2,7 @@ import time
 from flow.system_flow import SystemFlow
 from utils.alert import Alert
 
-props = {'xStream': {}, 'IForest': {}, 'Loda': {}, 'RRCF': {'num_trees':8, 'shingle_size':8}}
+props = {'xStream': {}, 'IForest': {}, 'Loda': {}}
 
 ens_props = {'Ensemble (IForest and Loda)': {'IForest': {}, 'Loda': {}},
              'Ensemble (Loda and xStream)': {'Loda': {}, 'xStream': {}},
@@ -31,7 +31,7 @@ selected_feature_extractors = ['autoencoder']
 
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
-topic = "device2"
+topic = "Device1"
 system_flow = SystemFlow(data_dim, props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
                  psw="changeme", elk_index="test_flow", verbose=True)
 

@@ -1,4 +1,4 @@
-"""import numpy as np
+import numpy as np
 import pandas as pd
 
 from custom_modules.feature_extractors.ip2vec import preprocess as p
@@ -23,7 +23,7 @@ X = pd.read_csv(file_dir)
 features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
 X = X[features]
 X.dropna(subset=features, inplace=True)
-X = X.iloc[0:100, :]
+#X = X.iloc[0:20000, :]
 # print(X.head(5))
 
 d = X.to_numpy()
@@ -32,8 +32,7 @@ print(w2v)
 print(v2w)
 corpus = pd.DataFrame(p._corpus(d, w2v)).to_numpy()
 freq = p._frequency(d)
-train = p._data_loader(corpus)
-print('Train:', train)
+train = p._data_loader(corpus, batch_size)
 
 device = th.device('cpu')
 trainer_model = t.Trainer(w2v, v2w, freq, emb_dim=32, device=device)
@@ -50,11 +49,8 @@ EMBEDDINGS = model.u_embedding.weight.detach().numpy()
 # print('Most similar of 192.168.2.122:')
 # trainer_model.most_similar('192.168.2.122', 5)
 
-ip_address = X['source_ip']
-ix = w2v[ip_address.values[0]]
-print(len(w2v))
-print('hey')
-print(ix)
+ip_address = '192.168.2.122'
+ix = w2v[ip_address]
 ip_vector = EMBEDDINGS[ix]
 print(ip_vector.shape)
 ip_vectors = []
@@ -66,6 +62,9 @@ for i in range(d.shape[0]):
     ip_vector = EMBEDDINGS[ix]
     ip_vectors.append(ip_vector)
 
-# print(ip_vectors)
-"""
+print(len(ip_vectors))
+print(np.asarray(ip_vectors).shape)
+np.save("custom_modules/feature_extractors/ip2vec/kitsune_ip2vec.npy", np.asarray(ip_vectors))
+print("a")
+
 
