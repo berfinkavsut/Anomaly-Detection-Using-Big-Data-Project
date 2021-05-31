@@ -1,7 +1,7 @@
 import torch as th
 from torch.autograd import Variable as V
 from torch import nn, optim
-from tqdm import tqdm_notebook as tqdm
+from tqdm import tqdm
 import numpy as np
 import random
 # from ip2vec.trainer import Skipgram

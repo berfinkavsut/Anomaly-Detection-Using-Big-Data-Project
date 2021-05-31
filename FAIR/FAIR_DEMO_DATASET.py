@@ -12,7 +12,7 @@ ens_props = {'Ensemble (xStream and IForest)': {'xStream': {}, 'IForest': {}}}
 
 
 
-path_lstm = "../debug/Active_Wiretap_5000.csv" #dataset path
+path_lstm = "../data/Active_Wiretap_5000_not_Transformer.csv"  #dataset path
 df_data_lstm = pd.read_csv(path_lstm)
 X_train = df_data_lstm.loc[:, df_data_lstm.columns != 'label']
 print(X_train)
@@ -21,21 +21,21 @@ dataset = X_train
 
 data_dim = 10
 # param is dictionary of dictionaries
-param = {'autoencoder': {'latent_dim': data_dim,
-                         'batch_size': 1,
-                         'epoch_no': 5,
-                         'optimizer': 'adam',
-                         'loss': 'mse'}}
+# param = {'autoencoder': {'latent_dim': data_dim,
+#                          'batch_size': 1,
+#                          'epoch_no': 5,
+#                          'optimizer': 'adam',
+#                          'loss': 'mse'}}
+#
+# col_names = list(X_train.head(5))
+# print(col_names)
+#
+# selected_features = {'autoencoder': col_names}
+# selected_feature_extractors = ['autoencoder']
+#
+# fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
-col_names = list(X_train.head(5))
-print(col_names)
-
-selected_features = {'autoencoder': col_names}
-selected_feature_extractors = ['autoencoder']
-
-fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
-
-selected_features = ['source_ip', 'destination_ip', 'dst_port', 'proto_type']
+selected_features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
 
 param = {'emb_dim': 10, 'max_epoch': 50, 'batch_size': 128, 'neg_num': 10}
 

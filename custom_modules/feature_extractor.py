@@ -19,11 +19,10 @@ class FeatureExtractor:
         self.feature_extractors_map = {'autoencoder': Autoencoder,
                                        'basic_extractor': BasicExtractor,
                                        'cluster_extractor': ClusterExtractor,
-                                       # 'ip2vec_extractor': Ip2VecExtractor,  #not compatible with online learning
+                                       'ip2vec_extractor': Ip2VecExtractor,  #not compatible with online learning
                                        'kitsune_feature_extractor': KitsuneFeatureExtractor,
                                        'lstm_autoencoder': LSTMAutoencoder,
-                                       'pca_extractor': PCAExtractor,
-                                       }
+                                       'pca_extractor': PCAExtractor}
 
         self.selected_feature_extractors = selected_feature_extractors
         self.selected_features = selected_features

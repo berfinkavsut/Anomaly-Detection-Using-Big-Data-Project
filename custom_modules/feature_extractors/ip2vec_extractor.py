@@ -27,7 +27,7 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         self.neg_num = self.param['neg_num']
 
         # take categorical features
-        self.features = ['source_ip', 'destination_ip', 'dst_port', 'protocol_name']
+        self.features = selected_features
 
         self.w2v = []
         self.v2w = []
@@ -89,6 +89,6 @@ class Ip2VecExtractor(BaseFeatureExtractor):
         :return: data frame output, subset of input
         """
 
-        self.fit()
+        self.fit(X)
         self.features_extracted = self.transform(X)
         return self.features_extracted
