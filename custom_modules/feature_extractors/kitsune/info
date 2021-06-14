@@ -1,0 +1,9 @@
+*** Notes about Kitsune Feature Extractor ***
+
+Kitsune code is taken from this Github repo:
+https://github.com/ymirsky/Kitsune-py
+
+Here, Kitsune's feature extractor is implemented in our project.
+
+The following link is for the article regarding Kitsune:
+https://arxiv.org/abs/1802.09089

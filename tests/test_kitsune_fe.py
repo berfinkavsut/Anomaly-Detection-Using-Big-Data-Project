@@ -21,15 +21,10 @@ data.columns = columns
 # packet_limit = np.Inf  # the number of packets to process
 packet_limit = len(data)
 
-param = {'limit': packet_limit,
+param = {'limit': packet_limit,  # or np.inf
          'Lambdas': np.nan,
          'HostLimit': 100000000000,
          'HostSimplexLimit': 100000000000}
-
-# param = {'limit': np.inf,
-#          'Lambdas': np.nan,
-#          'HostLimit': 100000000000,
-#          'HostSimplexLimit': 100000000000}
 
 selected_features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
                      'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot',
@@ -43,6 +38,5 @@ kitsune_fe.fit()
 
 for i in range(10):
     pkt = data.iloc[i]
-    # print(pkt)
     features_extracted = kitsune_fe.transform(pkt)
     print(features_extracted)

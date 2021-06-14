@@ -15,7 +15,13 @@ param = {'autoencoder': {'latent_dim': data_dim,
                          'batch_size': 1,
                          'epoch_no': 5,
                          'optimizer': 'adam',
-                         'loss': 'mse'}}
+                         'loss': 'mse'},
+         'lstm_autoencoder': {'latent_dim': 10,
+                              'time_step': 1,  # will be fixed
+                              'epoch_no': 5,
+                              'optimizer': 'adam',
+                              'loss': 'mse'},
+         }
 
 col_names = ["duration", "source_ip", "destination_ip", "protocol", "packet_len", "dif_serv", "flag", "ip_vers", "src_port", "dst_port",
              "data_len",
@@ -25,8 +31,10 @@ col_names = ["duration", "source_ip", "destination_ip", "protocol", "packet_len"
              "hw_type",
              "hw_size", "hw_opcode", "src_hw_mac", "dst_hw_mac"]
 
-selected_features = {'autoencoder': col_names}
-selected_feature_extractors = ['autoencoder']
+selected_features = {'autoencoder': col_names,
+                     'lstm_autoencoder': col_names}
+
+selected_feature_extractors = ['lstm_autoencoder']
 
 fe_config = {"selected_feature_extractors": selected_feature_extractors, "selected_features": selected_features, "param": param}
 
@@ -34,10 +42,9 @@ topic = "Device1"
 system_flow = SystemFlow( props, ens_props, config="cloud", fe=True, fe_config=fe_config, user="elastic",
                  psw="changeme", elk_index="test_flow", verbose=True, with_elastic=True, with_dataset=False)
 
-
 system_flow.create_stream(topic)
 
-thresholds= {'0.5': [0.5]}
+thresholds = {'0.5': [0.5]}
 
 i = 0
 

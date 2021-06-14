@@ -1,7 +1,4 @@
 import numpy as np
-import pandas as pd
-
-from matplotlib import pyplot
 from sklearn.cluster import KMeans
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
@@ -9,11 +6,10 @@ from custom_modules.feature_extractors.base_feature_extractor import BaseFeature
 
 class ClusterExtractor(BaseFeatureExtractor):
     """
-    IMPORTANT NOTES
+    Notes:
     Clustering is based on batch learning.
     Not compatible with online learning.
-
-    to be added: max iterations, tolerance  for k-means model
+    Works with preprocessed data!
     """
 
     feature_extractor_name = 'cluster_extractor'

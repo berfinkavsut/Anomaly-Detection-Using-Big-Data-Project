@@ -1,7 +1,6 @@
 import pandas as pd
 import torch as th
 import numpy as np
-import os
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 from custom_modules.feature_extractors.ip2vec import preprocess as p
@@ -9,14 +8,14 @@ from custom_modules.feature_extractors.ip2vec import trainer as t
 
 
 class Ip2VecExtractor(BaseFeatureExtractor):
-
+    """
+    Notes:
+    Works with raw data!
+    Not compatible with online learning right now!
+    """
     feature_extractor_name = 'ip2vec_extractor'
 
     def __init__(self, param, selected_features):
-        """
-        :param param: dictionary for model parameters
-        :param selected_features: selected features to extract features
-        """
 
         super().__init__(param=param, selected_features=selected_features)
 
@@ -55,10 +54,7 @@ class Ip2VecExtractor(BaseFeatureExtractor):
                                neg_num=self.neg_num)
 
     def transform(self, X):
-        """
-        :param X: data frame input
-        :return: data frame output, subset of input
-        """
+
         model = self.trainer_model.model
         embeddings = model.u_embedding.weight.detach().numpy()
 
@@ -73,21 +69,14 @@ class Ip2VecExtractor(BaseFeatureExtractor):
                 feature = pkt[j]
                 ix = self.w2v[feature]
                 new_vector = embeddings[ix]
-                # print(new_vector)
                 feature_vector = np.concatenate((feature_vector, new_vector), axis=0)
-                # print(feature_vector)
             feature_vectors.append(feature_vector)
-        # print(feature_vectors)
 
         self.features_extracted = np.array(feature_vectors)
 
         return self.features_extracted
 
     def fit_transform(self, X):
-        """
-        :param X: data frame input
-        :return: data frame output, subset of input
-        """
 
         self.fit(X)
         self.features_extracted = self.transform(X)

@@ -1,3 +1,4 @@
+"""
 import numpy as np
 import pandas as pd
 
@@ -66,5 +67,5 @@ print(len(ip_vectors))
 print(np.asarray(ip_vectors).shape)
 np.save("custom_modules/feature_extractors/ip2vec/kitsune_ip2vec.npy", np.asarray(ip_vectors))
 print("a")
-
+"""
 

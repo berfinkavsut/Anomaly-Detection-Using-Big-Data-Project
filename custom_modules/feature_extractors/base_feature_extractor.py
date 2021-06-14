@@ -1,3 +1,5 @@
+
+
 class BaseFeatureExtractor:
 
     def __init__(self, param, selected_features):
@@ -11,6 +13,7 @@ class BaseFeatureExtractor:
 
         # selected columns of data frame for feature extraction
         self.selected_features = selected_features
+
         # features extracted from the data
         self.features_extracted = []
 

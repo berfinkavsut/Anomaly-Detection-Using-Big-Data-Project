@@ -1,5 +1,3 @@
-import pandas as pd
-
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.models import Model
 
@@ -7,10 +5,9 @@ from custom_modules.feature_extractors.base_feature_extractor import BaseFeature
 
 
 class Autoencoder(BaseFeatureExtractor):
-
     """
-    NOTES
-    Loss sometimes starts very large and cannot decay.
+    Notes:
+    Works with preprocessed data!
     """
 
     feature_extractor_name = 'autoencoder'
@@ -103,11 +100,10 @@ class Autoencoder(BaseFeatureExtractor):
 
     def get_model(self):
         """
-        Get whole model of autoencoder for sanity check
-        Model has encoder and decoder parts
+        Get whole model of autoencoder for sanity check.
+        Model has encoder and decoder parts.
 
         :return: autoencoder model
         """
         return self.model
-
 

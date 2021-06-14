@@ -18,6 +18,10 @@ param = {'emb_dim': 10, 'max_epoch': 50, 'batch_size': 128, 'neg_num': 10}
 ip2vec_extractor = Ip2VecExtractor(param=param, selected_features=selected_features)
 
 ip2vec_extractor.fit(X)
+print(' Corpus is created and ready for the extraction of IP vectors!')
+
 features_extracted = ip2vec_extractor.transform(X)
-print('done')
+print('Ip vectors are extracted!')
+
 features_extracted.to_csv("ip2vec_4_feature.csv")
+print('CSV file is saved!')

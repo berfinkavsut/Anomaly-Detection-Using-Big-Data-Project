@@ -1,12 +1,10 @@
 import numpy as np
-import pandas as pd
 
 # Prep AfterImage cython package
 import os
 import subprocess
 import pyximport; pyximport.install()
-import custom_modules.feature_extractors.kitsune_after_image as af
-# import AfterImage_NDSS as af
+import custom_modules.feature_extractors.kitsune.kitsune_after_image as af
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 
@@ -20,6 +18,10 @@ if use_extrapolation:
 
 
 class KitsuneFeatureExtractor(BaseFeatureExtractor):
+    """
+    Notes:
+    Works with raw data!
+    """
 
     feature_extractor_name = 'kitsune_feature_extractor'
 
@@ -137,19 +139,6 @@ class KitsuneFeatureExtractor(BaseFeatureExtractor):
                 srcIP = srcMAC  # src MAC
             if dstIP == '':  # some other protocol (not tcp/udp/arp)
                 dstIP = dstMAC  # dst MAC
-
-            """
-            print('IPtype:', IPtype, ' type:', type(IPtype))
-            print('srcMAC:', srcMAC, ' type:', type(srcMAC))
-            print('dstMAC:', dstMAC, ' type:', type(dstMAC))
-            print('srcIP:', srcIP, ' type:', type(srcIP))
-            print('srcproto:', srcproto, ' type:', type(srcproto))
-            print('dstIP:', dstIP, ' type:', type(dstIP))
-            print('dstproto:', dstproto, ' type:', type(dstproto))
-            print('framelen:', framelen, ' type:', type(framelen))
-            print('timestamp:', timestamp, ' type:', type(timestamp))
-            print('PROTOCOL:', protocol_name)
-            """
 
             self.curPacketIndx = self.curPacketIndx + 1
 

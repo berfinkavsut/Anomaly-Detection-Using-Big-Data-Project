@@ -1,11 +1,13 @@
-import pandas as pd
-
 from sklearn.decomposition import PCA
 
 from custom_modules.feature_extractors.base_feature_extractor import BaseFeatureExtractor
 
 
 class PCAExtractor(BaseFeatureExtractor):
+    """
+    Notes:
+    Works with preprocessed data!
+    """
 
     feature_extractor_name = 'pca_extractor'
 
@@ -19,7 +21,6 @@ class PCAExtractor(BaseFeatureExtractor):
 
         self.k = self.param['k']
         self.model = PCA(n_components=self.k)
-        # print('k: ', self.k)
 
     def fit(self, X):
         """
@@ -66,7 +67,7 @@ class PCAExtractor(BaseFeatureExtractor):
 
     def get_model(self):
         """
-        Get the model for double check.
+        Get the model for sanity check.
 
         :return: PCA model
         """

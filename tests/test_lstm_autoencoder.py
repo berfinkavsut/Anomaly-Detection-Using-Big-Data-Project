@@ -16,6 +16,7 @@ data = pd.DataFrame.to_numpy(data)
 data = data[1::]
 data = np.nan_to_num(data)
 data = pd.DataFrame(data)
+
 features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
             'dst_bytes', 'land', 'wrong_fragment', 'urgent', 'hot',
             'num_failed_logins', 'logged_in', 'num_compromised', 'root_shell',
@@ -23,7 +24,6 @@ features = ['duration', 'protocol_type', 'service', 'flag', 'src_bytes',
             'num_access_files', 'num_outbound_cmds', 'is_host_login',
             ]
 data.columns = features
-# data = data[0:32]
 X = data
 selected_features = features
 
@@ -40,16 +40,14 @@ extracted_features = lstm_autoencoder.transform(X)
 extracted_features2 = lstm_autoencoder.transform(X)
 
 model = lstm_autoencoder.get_model()
-X_test = data[selected_features]
-X_test1 = X_test.to_numpy()
-X_test = X_test1.reshape(X_test1.shape[0], 1, X_test1.shape[1])
-# X = pd.DataFrame(X)
-X_hat = model.predict(X_test)
 
-print(X_test.shape)
-print(X_hat.shape)
-print('checkpoint')
+X_test = data[selected_features]
+temp = X_test.to_numpy()
+X_test = temp.reshape(temp.shape[0], 1, temp.shape[1])
+
+X_hat = model.predict(X_test)
 X_hat = X_hat.reshape(X_hat.shape[0], -1)
-score = mean_squared_error(X_test1, X_hat)
+
+score = mean_squared_error(temp, X_hat)
 print('MSE:', score)
 

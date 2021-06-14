@@ -1,0 +1,9 @@
+*** Notes about Ip2Vec Feature Extractor ***
+
+IP2Vec code is taken from this Github repo:
+https://github.com/imoken1122/IP2VEC
+
+Here, Ip2Vec is implemented and modified in our project.
+
+The following link is for the article regarding Ip2Vec:
+https://ieeexplore.ieee.org/document/8215725

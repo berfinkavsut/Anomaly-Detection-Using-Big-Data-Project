@@ -13,6 +13,11 @@ from custom_modules.feature_extractors.base_feature_extractor import BaseFeature
 
 
 class LSTMAutoencoder(BaseFeatureExtractor):
+    """
+    Notes:
+    Works with preprocessed data!
+    """
+
     feature_extractor_name = 'lstm_autoencoder'
 
     def __init__(self, param, selected_features):
@@ -31,8 +36,8 @@ class LSTMAutoencoder(BaseFeatureExtractor):
 
         # training parameters
         self.epoch_no = self.param['epoch_no']
-        self.optimizer = self.param['optimizer']  # 'adam' default ?
-        self.loss = self.param['loss']  # 'mse' default ?
+        self.optimizer = self.param['optimizer']
+        self.loss = self.param['loss']
 
         # LSTM auto encoder
 
@@ -63,11 +68,6 @@ class LSTMAutoencoder(BaseFeatureExtractor):
         # self.lstm_autoencoder.summary()
 
     def fit(self, X):
-        """
-
-        :param X:
-        :return:
-        """
 
         X = X[self.selected_features]
         X = X.to_numpy()
@@ -84,11 +84,6 @@ class LSTMAutoencoder(BaseFeatureExtractor):
         return history
 
     def transform(self, X):
-        """
-
-        :param X:
-        :return:
-        """
 
         X = X[self.selected_features]
         X = X.to_numpy()
@@ -102,11 +97,7 @@ class LSTMAutoencoder(BaseFeatureExtractor):
         return features_extracted
 
     def fit_transform(self, X):
-        """
 
-        :param X:
-        :return:
-        """
         self.fit(X)
         features_extracted = self.transform(X)
         return features_extracted
