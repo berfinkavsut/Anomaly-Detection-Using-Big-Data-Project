@@ -37,3 +37,7 @@ To run all unittests inside the tests/ directory, run the following command:
 To check the code quality inside a script, you can run the following command:
 
 `pylint script_to_be_tested.py`
+
+## Data Sets
+[This link](https://drive.google.com/drive/folders/1RZAkaWuvPs1LZunW0LdebhCafABl4pT7?usp=sharing) contains the data sets used in algorithm evaluations along with their explanations. 
+
