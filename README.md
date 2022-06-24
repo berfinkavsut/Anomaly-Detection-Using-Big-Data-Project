@@ -1,4 +1,4 @@
-# network-anomaly-detection
+# Anomaly Detection Using Big Data Project
 
 ## Contributors
 * Beste Aydemir 
