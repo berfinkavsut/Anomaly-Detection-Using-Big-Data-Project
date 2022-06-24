@@ -1,4 +1,4 @@
-# Anomaly Detection Using Big Data Project
+# Anomaly Detection Using Big Data
 
 ## Contributors
 * Beste Aydemir 
