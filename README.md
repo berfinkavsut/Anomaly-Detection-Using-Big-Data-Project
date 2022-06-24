@@ -2,14 +2,14 @@
 
 ## Contributors
 * Beste Aydemir 
-* Ege Ozan Özyedek
 * Berfin Kavşut
 * Şevki Gavrem Kulkuloğlu
+* Ege Ozan Özyedek
 * Meltem Toprak
 
-This repository contains files for the network anomaly detection framework. This project was conducted for EEE493/494 Industrial Design Projects I-II course at Bilkent University druing Fall Semester 2020 and Spring Semester 2021. 
+This repository contains files for the network anomaly detection framework. This project was conducted under EEE493/494 Industrial Design Projects I-II courses at Bilkent University during Fall Semester 2020 and Spring Semester 2021. 
 
-My individual contribution, Berfin Kavsut, to this project was feature extractors under custom modules, and working with Şevki Gavrem Kulkuloğu in transformer modules for pre-processing task. In feature extractors, Tensorflow framework was used for various extractors such as LSTM autoencoder. Other feature extractors, which are Kitsune and Ip2Vec extractors, were also utilized in this project. 
+My individual contributions to this project were feature extractors under custom modules, and working with Şevki Gavrem Kulkuloğu in transformer modules for pre-processing task. In feature extractors, Tensorflow framework was used for various extractors such as LSTM autoencoder. Other feature extractors, which are Kitsune and Ip2Vec extractors, were also utilized in this project. 
 
 ## Setting Up Working Environment
 
